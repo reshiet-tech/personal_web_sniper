@@ -1,0 +1,37 @@
+[
+    {
+        "name": "닌텐도 스토어",
+        "url": "https://store.nintendo.co.kr/",
+        "selector": "body",
+        "success_text": ["구매하기", "장바구니 담기"],
+        "failure_text": ["품절", "일시품절", "판매종료"]
+    },
+    {
+        "name": "야놀자",
+        "url": "https://www.yanolja.com/",
+        "selector": "body",
+        "success_text": ["객실선택", "예약하기"],
+        "failure_text": ["예약마감", "판매완료"]
+    },
+    {
+        "name": "여기어때",
+        "url": "https://www.goodchoice.kr/",
+        "selector": "body",
+        "success_text": ["객실선택", "예약가능"],
+        "failure_text": ["예약마감", "판매완료"]
+    },
+    {
+        "name": "하나투어",
+        "url": "https://www.hanatour.com/",
+        "selector": "body",
+        "success_text": ["예약하기", "결제하기"],
+        "failure_text": ["예약마감", "판매완료"]
+    },
+    {
+        "name": "웹투어",
+        "url": "https://www.webtour.com/",
+        "selector": "body",
+        "success_text": ["예약하기"],
+        "failure_text": ["예약마감", "판매완료"]
+    }
+]

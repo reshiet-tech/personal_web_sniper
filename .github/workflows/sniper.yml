@@ -1,0 +1,35 @@
+name: Personal Web Sniper Bot
+
+on:
+  schedule:
+    # 15분마다 주기적으로 실행 (UTC 기준)
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # GitHub Actions 탭에서 수동으로 실행 가능하게 함
+
+jobs:
+  run-sniper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          # Playwright가 사용할 Chromium 브라우저 및 필수 의존성 설치
+          playwright install chromium --with-deps
+
+      - name: Run Web Sniper Bot
+        env:
+          # GitHub Repository의 Settings -> Secrets and variables -> Actions 에 아래 환경변수들을 등록해야 합니다.
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python main.py
