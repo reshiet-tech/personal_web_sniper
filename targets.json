@@ -1,37 +1,86 @@
 [
     {
-        "name": "닌텐도 스토어",
-        "url": "https://store.nintendo.co.kr/",
+        "name": "닌텐도 스위치2",
+        "url": "https://store.nintendo.co.kr/beeskb6aakor",
         "selector": "body",
-        "success_text": ["구매하기", "장바구니 담기"],
-        "failure_text": ["품절", "일시품절", "판매종료"]
+        "success_text": [
+            "구매하기",
+            "구매",
+            "장바구니 담기"
+        ],
+        "failure_text": [
+            "품절"
+        ]
     },
     {
-        "name": "야놀자",
-        "url": "https://www.yanolja.com/",
+        "name": "웹투어_브리드양양",
+        "url": "https://www2.webtour.com/dh/dh_detail.asp?GdsCode=DHH005931&wGdsName=브리드%20호텔%20양양",
         "selector": "body",
-        "success_text": ["객실선택", "예약하기"],
-        "failure_text": ["예약마감", "판매완료"]
+        "success_text": [
+            "확정예약",
+            "대기예약"
+        ],
+        "failure_text": [
+            "검색된 객실이 없습니다"
+        ]
     },
     {
-        "name": "여기어때",
-        "url": "https://www.goodchoice.kr/",
+        "name": "웹투어_삼척 쏠비치",
+        "url": "https://www2.webtour.com/dh/dh_detail.asp?GdsCode=DHC001446",
         "selector": "body",
-        "success_text": ["객실선택", "예약가능"],
-        "failure_text": ["예약마감", "판매완료"]
+        "success_text": [
+            "확정예약",
+            "대기예약"
+        ],
+        "failure_text": [
+            "검색된 객실이 없습니다"
+        ]
     },
     {
-        "name": "하나투어",
-        "url": "https://www.hanatour.com/",
+        "name": "웹투어_양양  쏠비치",
+        "url": "https://www2.webtour.com/dh/dh_detail.asp?GdsCode=DHC001466",
         "selector": "body",
-        "success_text": ["예약하기", "결제하기"],
-        "failure_text": ["예약마감", "판매완료"]
+        "success_text": [
+            "확정예약",
+            "대기예약"
+        ],
+        "failure_text": [
+            "검색된 객실이 없습니다"
+        ]
     },
     {
-        "name": "웹투어",
-        "url": "https://www.webtour.com/",
+        "name": "하나투어_삼척 쏠비치",
+        "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001446&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
         "selector": "body",
-        "success_text": ["예약하기"],
-        "failure_text": ["예약마감", "판매완료"]
+        "success_text": [
+            "예약",
+            "확정"
+        ],
+        "failure_text": [
+            "마감"
+        ]
+    },
+    {
+        "name": "하나투어_양양 쏠비치",
+        "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001466&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
+        "selector": "body",
+        "success_text": [
+            "예약",
+            "확정"
+        ],
+        "failure_text": [
+            "마감"
+        ]
+    },
+    {
+        "name": "야놀자_브리드호텔",
+        "url": "https://nol.yanolja.com/stay/domestic/10044985",
+        "selector": "body",
+        "success_text": [
+            "예약하기"
+        ],
+        "failure_text": [
+            "예약마감"
+        ]
     }
 ]
