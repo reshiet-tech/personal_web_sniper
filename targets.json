@@ -37,17 +37,6 @@
         ]
     },
     {
-        "name": "야놀자_브리드호텔",
-        "url": "https://nol.yanolja.com/stay/domestic/10044985",
-        "selector": "body",
-        "success_text": [
-            "예약하기"
-        ],
-        "failure_text": [
-            "예약마감"
-        ]
-    },
-    {
         "name": "여기어때_양양 쏠비치",
         "url": "https://www.yeogi.com/domestic-accommodations/6578?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=쏠비치%20양양%20리조트",
         "selector": "body",
