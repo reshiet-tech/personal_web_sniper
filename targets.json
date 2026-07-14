@@ -1,18 +1,5 @@
 [
     {
-        "name": "닌텐도 스위치2",
-        "url": "https://store.nintendo.co.kr/beeskb6aakor",
-        "selector": "body",
-        "success_text": [
-            "구매하기",
-            "구매",
-            "장바구니 담기"
-        ],
-        "failure_text": [
-            "품절"
-        ]
-    },
-    {
         "name": "하나투어_삼척 쏠비치",
         "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001446&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
         "selector": "body",
@@ -76,6 +63,17 @@
         ],
         "failure_text": [
             "선택한 날짜의 객실은 매진되었어요"
+        ]
+    },
+    {
+        "name": "스위치2",
+        "url": " https://store.nintendo.co.kr/beeskb6aakor",
+        "selector": "body",
+        "success_text": [
+            "구매 가능"
+        ],
+        "failure_text": [
+            "품절"
         ]
     }
 ]
