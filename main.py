@@ -63,10 +63,11 @@ async def check_site_status(page, target):
     try:
         logger.info(f"[{name}] 접속 중: {url}")
         
-        # networkidle 옵션: 네트워크 요청이 최소 500ms 동안 없을 때까지 대기 (동적 렌더링 사이트 대응)
-        await page.goto(url, wait_until="networkidle", timeout=30000)
+        # domcontentloaded: 기본 HTML 로딩이 완료되면 대기 종료 (야놀자 등 무거운 사이트 타임아웃 방지)
+        await page.goto(url, wait_until="domcontentloaded", timeout=30000)
         
-        # 페이지가 완전히 렌더링될 수 있도록 약간의 추가 대기 시간
+        # 페이지가 완전히 렌더링될 수 있도록 여유 있는 대기 시간 부여
+        await asyncio.sleep(4)
         await asyncio.sleep(2)
         
         # 특정 요소나 body 전체의 텍스트 가져오기
@@ -90,6 +91,16 @@ async def check_site_status(page, target):
     except Exception as e:
         logger.error(f"[{name}] 확인 중 에러 발생: {e}")
 
+import random
+from playwright_stealth import Stealth
+
+USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2.1 Safari/605.1.15"
+]
+
 async def main():
     logger.info("=== 웹 스나이퍼 봇 실행 시작 ===")
     
@@ -97,19 +108,29 @@ async def main():
         # 봇 탐지 우회를 위한 브라우저 설정 (헤드리스 모드)
         browser = await p.chromium.launch(headless=True)
         
-        # User-Agent 및 기본 설정 적용
+        # User-Agent 무작위 선택
+        user_agent = random.choice(USER_AGENTS)
+        
+        # 기본 설정 적용
         context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            user_agent=user_agent,
             viewport={"width": 1920, "height": 1080},
             locale="ko-KR",
             timezone_id="Asia/Seoul"
         )
         page = await context.new_page()
+        
+        # Playwright Stealth 적용 (봇 탐지 우회, v2.x API)
+        stealth = Stealth()
+        await stealth.apply_stealth_async(page)
 
         for target in TARGET_SITES:
+            # 사람처럼 보이기 위한 접속 전 무작위 딜레이 (1~3초)
+            await asyncio.sleep(random.uniform(1.0, 3.0))
             await check_site_status(page, target)
-            # IP 차단을 막기 위해 사이트 간 랜덤 딜레이 또는 고정 딜레이 추가
-            await asyncio.sleep(3)
+            
+            # IP 차단 및 비정상 접근 방지를 위한 사이트 간 무작위 딜레이 (3~7초)
+            await asyncio.sleep(random.uniform(3.0, 7.0))
 
         await browser.close()
         
