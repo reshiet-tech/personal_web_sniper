@@ -73,5 +73,17 @@
             "구매 하기"
         ],
         "failure_text": []
+    },
+    {
+        "name": "이마트_스위치2",
+        "url": "https://eapp.emart.com/webapp/digital/view/4902370552690?storeCode=1480&trcknCode=rewardlink",
+        "selector": "body",
+        "success_text": [
+            "구매하기",
+            "구매가능"
+        ],
+        "failure_text": [
+            "다 팔렸어요!"
+        ]
     }
 ]
