@@ -57,7 +57,8 @@
         "selector": "body",
         "success_text": [
             "라이즈업 미디움",
-            "라이즈업 엑스라지"
+            "라이즈업 엑스라지",
+            "객실 예약"
         ],
         "failure_text": [
             "선택한 날짜의 객실은 매진되었어요"
@@ -68,7 +69,8 @@
         "url": " https://store.nintendo.co.kr/beeskb6aakor",
         "selector": "body",
         "success_text": [
-            "구매 가능"
+            "구매 가능",
+            "구매 하기"
         ],
         "failure_text": []
     }
