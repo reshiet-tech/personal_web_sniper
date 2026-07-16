@@ -85,14 +85,5 @@
         "failure_text": [
             "다 팔렸어요!"
         ]
-    },
-    {
-        "name": "깃허브 테스트",
-        "url": "https://www.google.com",
-        "selector": "body",
-        "success_text": [
-            "Google"
-        ],
-        "failure_text": []
     }
 ]
