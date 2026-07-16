@@ -1,6 +1,9 @@
 name: Personal Web Sniper Bot
 
 on:
+  push:
+    branches:
+      - main
   schedule:
     # 15분마다 주기적으로 실행 (UTC 기준)
     - cron: '*/5 * * * *'
