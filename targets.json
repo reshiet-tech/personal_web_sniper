@@ -94,5 +94,14 @@
         "failure_text": [
             "상품준비중입니다"
         ]
+    },
+    {
+        "name": "컬리_스위치2",
+        "url": "https://www.kurly.com/goods/1002035210?collectionCode=br-377",
+        "selector": "body",
+        "success_text": [],
+        "failure_text": [
+            "상품준비중입니다"
+        ]
     }
 ]
