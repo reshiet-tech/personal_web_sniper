@@ -85,5 +85,14 @@
         "failure_text": [
             "다 팔렸어요!"
         ]
+    },
+    {
+        "name": "컬리_스위치2",
+        "url": "https://www.kurly.com/goods/1002056350",
+        "selector": "body",
+        "success_text": [],
+        "failure_text": [
+            "상품준비중입니다"
+        ]
     }
 ]
