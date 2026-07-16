@@ -56,10 +56,8 @@
         "url": "https://www.yeogi.com/domestic-accommodations/68602?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=브리드%20호텔%20양양",
         "selector": "body",
         "success_text": [
-            "대기예약",
-            "예약하기",
-            "예약가능",
-            "레이"
+            "라이즈업 미디움",
+            "라이즈업 엑스라지"
         ],
         "failure_text": [
             "선택한 날짜의 객실은 매진되었어요"
@@ -72,8 +70,6 @@
         "success_text": [
             "구매 가능"
         ],
-        "failure_text": [
-            "품절"
-        ]
+        "failure_text": []
     }
 ]
