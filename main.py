@@ -6,7 +6,7 @@ from playwright_stealth import Stealth
 from src.config import load_targets, get_logger
 from src.notifier import send_telegram_message
 from src.comparator import load_snapshots, save_snapshots, get_text_diff
-from src.fetcher import fetch_and_normalize
+from src.fetcher import fetch_and_normalize, fetch_simple
 from src.ai_filter import evaluate_diff_with_ai
 
 logger = get_logger(__name__)
@@ -25,9 +25,12 @@ async def check_site_status(page, target, snapshots):
     failure_texts = target.get("failure_text", [])
 
     try:
-        logger.info(f"[{name}] 접속 중: {url}")
-        
-        content = await fetch_and_normalize(page, target)
+        if target.get("use_simple_fetch", False):
+            logger.info(f"[{name}] 접속 중 (Simple Fetch): {url}")
+            content = await fetch_simple(target)
+        else:
+            logger.info(f"[{name}] 접속 중: {url}")
+            content = await fetch_and_normalize(page, target)
         old_content = snapshots.get(name, "")
         
         # 변경점 분석

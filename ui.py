@@ -139,6 +139,7 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
     
     with st.expander("⚙️ 고급 설정 (정규화 및 필터링)"):
         st.info("성공/실패 텍스트를 비워두면 **[모든 텍스트 변경 감지(Diff) 모드]**로 동작합니다.")
+        new_use_simple_fetch = st.checkbox("단순 스크래핑 모드 (WAF 우회 및 초고속 동작)", value=False)
         new_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", help="HTML에서 아예 삭제할 요소 (예: .ad-banner, #counter)")
         new_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", help="텍스트에서 지워버릴 패턴 (예: [0-9]{2}:[0-9]{2})")
         
@@ -156,7 +157,8 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
                 "success_text": success_list,
                 "failure_text": failure_list,
                 "ignore_selectors": ignore_sel_list,
-                "ignore_regex": ignore_reg_list
+                "ignore_regex": ignore_reg_list,
+                "use_simple_fetch": new_use_simple_fetch
             })
             save_targets(targets)
             st.session_state['add_temp_selector'] = 'body' # 리셋
@@ -218,6 +220,7 @@ else:
                     edit_failure = st.text_input("실패 텍스트", value=",".join(target['failure_text']), key=f"edit_failure_{i}")
                     
                     with st.expander("⚙️ 고급 설정"):
+                        edit_use_simple_fetch = st.checkbox("단순 스크래핑 모드 (WAF 우회)", value=target.get('use_simple_fetch', False), key=f"edit_simple_{i}")
                         edit_ignore_selectors = st.text_area("무시할 CSS 선택자", value="\n".join(target.get('ignore_selectors', [])), key=f"edit_ig_sel_{i}")
                         edit_ignore_regex = st.text_area("무시할 정규표현식", value="\n".join(target.get('ignore_regex', [])), key=f"edit_ig_reg_{i}")
                     
@@ -232,6 +235,7 @@ else:
                                 targets[i]['failure_text'] = [t.strip() for t in edit_failure.split(",") if t.strip()]
                                 targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
                                 targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
+                                targets[i]['use_simple_fetch'] = edit_use_simple_fetch
                                 save_targets(targets)
                                 st.session_state.edit_idx = None
                                 if f'edit_temp_selector_{i}' in st.session_state:
