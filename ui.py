@@ -195,10 +195,10 @@ else:
                                     if result_str and result_str != "body":
                                         try:
                                             data = json.loads(result_str)
-                                            st.session_state[f'edit_temp_selector_{i}'] = data.get('selector', 'body')
+                                            st.session_state[f'edit_selector_input_{i}'] = data.get('selector', 'body')
                                             st.session_state[f'edit_temp_text_{i}'] = data.get('text', '')
                                         except json.JSONDecodeError:
-                                            st.session_state[f'edit_temp_selector_{i}'] = result_str
+                                            st.session_state[f'edit_selector_input_{i}'] = result_str
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"실행 오류: {e}")
