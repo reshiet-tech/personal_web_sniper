@@ -28,7 +28,7 @@ async def fetch_and_normalize(page, target):
     if ignore_regex:
         for regex_pattern in ignore_regex:
             try:
-                content = re.sub(regex_pattern, "", content)
+                content = re.sub(regex_pattern, "", content, flags=re.MULTILINE)
             except Exception as e:
                 logger.warning(f"정규식 처리 오류 ({regex_pattern}): {e}")
                 
