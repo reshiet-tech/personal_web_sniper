@@ -4,7 +4,6 @@
         "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001446&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
         "selector": "body",
         "success_text": [
-            "예약",
             "확정"
         ],
         "failure_text": []
@@ -14,7 +13,6 @@
         "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001466&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
         "selector": "body",
         "success_text": [
-            "예약",
             "확정"
         ],
         "failure_text": []
