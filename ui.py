@@ -97,8 +97,10 @@ def save_targets(targets):
 targets = load_targets()
 
 # 타겟 추가 폼
-if 'add_selector_input' not in st.session_state:
-    st.session_state['add_selector_input'] = 'body'
+if 'add_temp_selector' not in st.session_state:
+    st.session_state['add_temp_selector'] = 'body'
+if 'add_sel_counter' not in st.session_state:
+    st.session_state['add_sel_counter'] = 0
 
 with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
     new_name = st.text_input("타겟 이름 (예: 아이폰 15 프로)")
@@ -106,7 +108,7 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
     
     c1, c2 = st.columns([3, 1])
     with c1:
-        new_selector = st.text_input("CSS 선택자", key="add_selector_input")
+        new_selector = st.text_input("CSS 선택자", value=st.session_state['add_temp_selector'], key=f"add_sel_input_{st.session_state['add_sel_counter']}")
     with c2:
         st.write("")
         st.write("")
@@ -118,10 +120,11 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
                         if result_str and result_str != "body":
                             try:
                                 data = json.loads(result_str)
-                                st.session_state['add_selector_input'] = data.get('selector', 'body')
+                                st.session_state['add_temp_selector'] = data.get('selector', 'body')
                                 st.session_state['add_temp_text'] = data.get('text', '')
                             except json.JSONDecodeError:
-                                st.session_state['add_selector_input'] = result_str
+                                st.session_state['add_temp_selector'] = result_str
+                            st.session_state['add_sel_counter'] += 1
                             st.rerun()
                     except Exception as e:
                         st.error(f"실행 오류: {e}")
@@ -180,13 +183,15 @@ else:
                     # 인라인 수정 모드
                     st.markdown(f"#### ✏️ '{target['name']}' 수정")
                     
+                    if f'edit_sel_counter_{i}' not in st.session_state:
+                        st.session_state[f'edit_sel_counter_{i}'] = 0
                     if f'edit_temp_selector_{i}' not in st.session_state:
                         st.session_state[f'edit_temp_selector_{i}'] = target.get('selector', 'body')
                         
                     edit_name = st.text_input("타겟 이름", value=target['name'], key=f"edit_name_{i}")
                     edit_url = st.text_input("URL", value=target['url'], key=f"edit_url_{i}")
                     
-                    edit_selector = st.text_input("CSS 선택자", value=st.session_state[f'edit_temp_selector_{i}'], key=f"edit_selector_input_{i}")
+                    edit_selector = st.text_input("CSS 선택자", value=st.session_state[f'edit_temp_selector_{i}'], key=f"edit_sel_input_{i}_{st.session_state[f'edit_sel_counter_{i}']}")
                     if st.button("🔍 화면에서 콕 찍기", key=f"btn_edit_visual_{i}", use_container_width=True):
                         if edit_url:
                             with st.spinner("창이 열리면 원하는 구역을 클릭하세요!"):
@@ -195,10 +200,11 @@ else:
                                     if result_str and result_str != "body":
                                         try:
                                             data = json.loads(result_str)
-                                            st.session_state[f'edit_selector_input_{i}'] = data.get('selector', 'body')
+                                            st.session_state[f'edit_temp_selector_{i}'] = data.get('selector', 'body')
                                             st.session_state[f'edit_temp_text_{i}'] = data.get('text', '')
                                         except json.JSONDecodeError:
-                                            st.session_state[f'edit_selector_input_{i}'] = result_str
+                                            st.session_state[f'edit_temp_selector_{i}'] = result_str
+                                        st.session_state[f'edit_sel_counter_{i}'] += 1
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"실행 오류: {e}")
