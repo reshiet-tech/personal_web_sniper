@@ -162,93 +162,83 @@ else:
     for i, target in enumerate(targets):
         with cols[i % 2]:
             with st.container(border=True):
-                # 파비콘(아이콘) 주소 추출
-                domain = urlparse(target['url']).netloc
-                favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
-                
-                st.markdown(f"#### <img src='{favicon_url}' width='24' style='vertical-align: middle; margin-right: 8px; border-radius: 4px;'/> {target['name']}", unsafe_allow_html=True)
-                # 긴 URL 대신 버튼식으로 변경
-                st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)
-                
-                st.caption(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (AI 판독)'}")
-                st.caption(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
-                if target.get('ignore_selectors') or target.get('ignore_regex'):
-                    st.caption("⚙️ 필터링(Ignore) 옵션 켜짐")
+                if st.session_state.get('edit_idx') == i:
+                    # 인라인 수정 모드
+                    st.markdown(f"#### ✏️ '{target['name']}' 수정")
                     
-                c1, c2 = st.columns(2)
-                with c1:
-                    if st.button("수정 ✏️", key=f"edit_btn_{i}", use_container_width=True):
-                        st.session_state.edit_idx = i
-                with c2:
-                    if st.button("삭제 🗑️", key=f"del_btn_{i}", type="primary", use_container_width=True):
-                        targets.pop(i)
-                        save_targets(targets)
-                        if st.session_state.edit_idx == i:
+                    if f'edit_temp_selector_{i}' not in st.session_state:
+                        st.session_state[f'edit_temp_selector_{i}'] = target.get('selector', 'body')
+                        
+                    edit_name = st.text_input("타겟 이름", value=target['name'], key=f"edit_name_{i}")
+                    edit_url = st.text_input("URL", value=target['url'], key=f"edit_url_{i}")
+                    
+                    edit_selector = st.text_input("CSS 선택자", value=st.session_state[f'edit_temp_selector_{i}'], key=f"edit_selector_input_{i}")
+                    if st.button("🔍 화면에서 콕 찍기", key=f"btn_edit_visual_{i}", use_container_width=True):
+                        if edit_url:
+                            with st.spinner("창이 열리면 원하는 구역을 클릭하세요!"):
+                                try:
+                                    result = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", edit_url], text=True).strip()
+                                    if result and result != "body":
+                                        st.session_state[f'edit_temp_selector_{i}'] = result
+                                        st.rerun()
+                                except Exception as e:
+                                    st.error(f"실행 오류: {e}")
+                        else:
+                            st.warning("URL을 입력해주세요!")
+                            
+                    edit_success = st.text_input("성공 텍스트", value=",".join(target['success_text']), key=f"edit_success_{i}")
+                    edit_failure = st.text_input("실패 텍스트", value=",".join(target['failure_text']), key=f"edit_failure_{i}")
+                    
+                    with st.expander("⚙️ 고급 설정"):
+                        edit_ignore_selectors = st.text_area("무시할 CSS 선택자", value="\n".join(target.get('ignore_selectors', [])), key=f"edit_ig_sel_{i}")
+                        edit_ignore_regex = st.text_area("무시할 정규표현식", value="\n".join(target.get('ignore_regex', [])), key=f"edit_ig_reg_{i}")
+                    
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        if st.button("저장", type="primary", use_container_width=True, key=f"btn_save_{i}"):
+                            if edit_name and edit_url:
+                                targets[i]['name'] = edit_name
+                                targets[i]['url'] = edit_url
+                                targets[i]['selector'] = edit_selector
+                                targets[i]['success_text'] = [t.strip() for t in edit_success.split(",") if t.strip()]
+                                targets[i]['failure_text'] = [t.strip() for t in edit_failure.split(",") if t.strip()]
+                                targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
+                                targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
+                                save_targets(targets)
+                                st.session_state.edit_idx = None
+                                if f'edit_temp_selector_{i}' in st.session_state:
+                                    del st.session_state[f'edit_temp_selector_{i}']
+                                st.rerun()
+                            else:
+                                st.error("이름, URL 필수")
+                    with c2:
+                        if st.button("취소", use_container_width=True, key=f"btn_cancel_{i}"):
                             st.session_state.edit_idx = None
-                        st.rerun()
+                            if f'edit_temp_selector_{i}' in st.session_state:
+                                del st.session_state[f'edit_temp_selector_{i}']
+                            st.rerun()
+                else:
+                    # 일반 표시 모드
+                    domain = urlparse(target['url']).netloc
+                    favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
+                    
+                    st.markdown(f"#### <img src='{favicon_url}' width='24' style='vertical-align: middle; margin-right: 8px; border-radius: 4px;'/> {target['name']}", unsafe_allow_html=True)
+                    st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)
+                    
+                    st.caption(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (AI 판독)'}")
+                    st.caption(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
+                    if target.get('ignore_selectors') or target.get('ignore_regex'):
+                        st.caption("⚙️ 필터링(Ignore) 옵션 켜짐")
                         
-    # 수정 폼은 그리드 아래에 크게 표시
-    if st.session_state.edit_idx is not None and st.session_state.edit_idx < len(targets):
-        i = st.session_state.edit_idx
-        target = targets[i]
-        st.divider()
-        st.markdown(f"### ✏️ '{target['name']}' 타겟 수정")
-        
-        if f'edit_temp_selector_{i}' not in st.session_state:
-            st.session_state[f'edit_temp_selector_{i}'] = target.get('selector', 'body')
-            
-        with st.container():
-            edit_name = st.text_input("타겟 이름", value=target['name'], key=f"edit_name_{i}")
-            edit_url = st.text_input("URL", value=target['url'], key=f"edit_url_{i}")
-            
-            c1, c2 = st.columns([3, 1])
-            with c1:
-                edit_selector = st.text_input("CSS 선택자", value=st.session_state[f'edit_temp_selector_{i}'], key=f"edit_selector_input_{i}")
-            with c2:
-                st.write("")
-                st.write("")
-                if st.button("🔍 화면에서 콕 찍기", key=f"btn_edit_visual_{i}", use_container_width=True):
-                    if edit_url:
-                        with st.spinner("브라우저 창이 열리면 마우스로 원하는 구역을 클릭하세요!"):
-                            try:
-                                result = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", edit_url], text=True).strip()
-                                if result and result != "body":
-                                    st.session_state[f'edit_temp_selector_{i}'] = result
-                                    st.rerun()
-                            except Exception as e:
-                                st.error(f"실행 오류: {e}")
-                    else:
-                        st.warning("URL을 먼저 입력해주세요!")
-                        
-            edit_success = st.text_input("성공 텍스트 (쉼표로 구분)", value=",".join(target['success_text']), key=f"edit_success_{i}")
-            edit_failure = st.text_input("실패 텍스트 (쉼표로 구분)", value=",".join(target['failure_text']), key=f"edit_failure_{i}")
-            
-            with st.expander("⚙️ 고급 설정 (정규화 및 필터링)"):
-                st.info("성공/실패 텍스트를 비워두면 **[모든 텍스트 변경 감지(Diff) 모드]**로 동작합니다.")
-                edit_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_selectors', [])), key=f"edit_ig_sel_{i}")
-                edit_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_regex', [])), key=f"edit_ig_reg_{i}")
-            
-            c1, c2 = st.columns(2)
-            with c1:
-                if st.button("저장하기", type="primary", use_container_width=True, key=f"btn_save_{i}"):
-                    if edit_name and edit_url:
-                        targets[i]['name'] = edit_name
-                        targets[i]['url'] = edit_url
-                        targets[i]['selector'] = edit_selector
-                        targets[i]['success_text'] = [t.strip() for t in edit_success.split(",") if t.strip()]
-                        targets[i]['failure_text'] = [t.strip() for t in edit_failure.split(",") if t.strip()]
-                        targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
-                        targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
-                        save_targets(targets)
-                        st.session_state.edit_idx = None
-                        if f'edit_temp_selector_{i}' in st.session_state:
-                            del st.session_state[f'edit_temp_selector_{i}']
-                        st.rerun()
-                    else:
-                        st.error("이름과 URL은 필수 항목입니다.")
-            with c2:
-                if st.button("취소", use_container_width=True, key=f"btn_cancel_{i}"):
-                    st.session_state.edit_idx = None
-                    if f'edit_temp_selector_{i}' in st.session_state:
-                        del st.session_state[f'edit_temp_selector_{i}']
-                    st.rerun()
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        if st.button("수정 ✏️", key=f"edit_btn_{i}", use_container_width=True):
+                            st.session_state.edit_idx = i
+                            st.rerun()
+                    with c2:
+                        if st.button("삭제 🗑️", key=f"del_btn_{i}", type="primary", use_container_width=True):
+                            targets.pop(i)
+                            save_targets(targets)
+                            if st.session_state.get('edit_idx') == i:
+                                st.session_state.edit_idx = None
+                            st.rerun()
