@@ -91,8 +91,8 @@ def save_targets(targets):
 targets = load_targets()
 
 # 타겟 추가 폼
-if 'add_temp_selector' not in st.session_state:
-    st.session_state['add_temp_selector'] = 'body'
+if 'add_selector_input' not in st.session_state:
+    st.session_state['add_selector_input'] = 'body'
 
 with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
     new_name = st.text_input("타겟 이름 (예: 아이폰 15 프로)")
@@ -100,7 +100,7 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
     
     c1, c2 = st.columns([3, 1])
     with c1:
-        new_selector = st.text_input("CSS 선택자", value=st.session_state['add_temp_selector'])
+        new_selector = st.text_input("CSS 선택자", key="add_selector_input")
     with c2:
         st.write("")
         st.write("")
@@ -112,10 +112,10 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
                         if result_str and result_str != "body":
                             try:
                                 data = json.loads(result_str)
-                                st.session_state['add_temp_selector'] = data.get('selector', 'body')
+                                st.session_state['add_selector_input'] = data.get('selector', 'body')
                                 st.session_state['add_temp_text'] = data.get('text', '')
                             except json.JSONDecodeError:
-                                st.session_state['add_temp_selector'] = result_str
+                                st.session_state['add_selector_input'] = result_str
                             st.rerun()
                     except Exception as e:
                         st.error(f"실행 오류: {e}")
