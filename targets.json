@@ -26,9 +26,7 @@
         "url": "https://www.yeogi.com/domestic-accommodations/6578?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=쏠비치%20양양%20리조트",
         "selector": "body",
         "success_text": [],
-        "failure_text": [
-            "선택한 날짜의 객실은 매진되었어요"
-        ],
+        "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": []
     },
@@ -37,9 +35,7 @@
         "url": "https://www.yeogi.com/domestic-accommodations/7479?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=쏠비치%20삼척%20리조트",
         "selector": "body",
         "success_text": [],
-        "failure_text": [
-            "선택한 날짜의 객실은 매진되었어요"
-        ],
+        "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": []
     },
@@ -48,9 +44,7 @@
         "url": "https://www.yeogi.com/domestic-accommodations/68602?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=브리드%20호텔%20양양",
         "selector": "body",
         "success_text": [],
-        "failure_text": [
-            "선택한 날짜의 객실은 매진되었어요"
-        ],
+        "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": []
     },
