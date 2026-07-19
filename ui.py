@@ -135,64 +135,70 @@ if "edit_idx" not in st.session_state:
 if not targets:
     st.info("등록된 타겟이 없습니다. 위에서 추가해 주세요.")
 else:
+    # 2열 그리드로 표시
+    cols = st.columns(2)
     for i, target in enumerate(targets):
-        with st.container():
-            col1, col2, col3 = st.columns([3, 1, 1])
-            with col1:
-                st.markdown(f"**{target['name']}**")
-                st.caption(f"🔗 {target['url']}")
-                st.text(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (변경 감지 모드)'}")
-                st.text(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
+        with cols[i % 2]:
+            with st.container(border=True):
+                st.markdown(f"#### {target['name']}")
+                # 긴 URL 대신 버튼식으로 변경
+                st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)
+                
+                st.caption(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (AI 판독)'}")
+                st.caption(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
                 if target.get('ignore_selectors') or target.get('ignore_regex'):
-                    st.caption("⚙️ 정규화(Ignore) 설정 적용됨")
-            with col2:
-                if st.button("수정", key=f"edit_btn_{i}"):
-                    st.session_state.edit_idx = i
-            with col3:
-                if st.button("삭제", key=f"del_btn_{i}"):
-                    targets.pop(i)
-                    save_targets(targets)
-                    if st.session_state.edit_idx == i:
-                        st.session_state.edit_idx = None
-                    st.rerun()
+                    st.caption("⚙️ 필터링(Ignore) 옵션 켜짐")
                     
-        # 수정 폼 표시
-        if st.session_state.edit_idx == i:
-            with st.form(key=f"edit_form_{i}"):
-                st.markdown("#### ✏️ 타겟 수정")
-                edit_name = st.text_input("타겟 이름", value=target['name'])
-                edit_url = st.text_input("URL", value=target['url'])
-                edit_selector = st.text_input("CSS 선택자", value=target.get('selector', 'body'))
-                edit_success = st.text_input("성공 텍스트 (쉼표로 구분)", value=",".join(target['success_text']))
-                edit_failure = st.text_input("실패 텍스트 (쉼표로 구분)", value=",".join(target['failure_text']))
-                
-                with st.expander("⚙️ 고급 설정 (정규화 및 필터링)"):
-                    st.info("성공/실패 텍스트를 비워두면 **[모든 텍스트 변경 감지(Diff) 모드]**로 동작합니다.")
-                    edit_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_selectors', [])))
-                    edit_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_regex', [])))
-                
                 c1, c2 = st.columns(2)
                 with c1:
-                    save_btn = st.form_submit_button("저장하기")
+                    if st.button("수정 ✏️", key=f"edit_btn_{i}", use_container_width=True):
+                        st.session_state.edit_idx = i
                 with c2:
-                    cancel_btn = st.form_submit_button("취소")
-                    
-                if save_btn:
-                    if edit_name and edit_url:
-                        targets[i]['name'] = edit_name
-                        targets[i]['url'] = edit_url
-                        targets[i]['selector'] = edit_selector
-                        targets[i]['success_text'] = [t.strip() for t in edit_success.split(",") if t.strip()]
-                        targets[i]['failure_text'] = [t.strip() for t in edit_failure.split(",") if t.strip()]
-                        targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
-                        targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
+                    if st.button("삭제 🗑️", key=f"del_btn_{i}", type="primary", use_container_width=True):
+                        targets.pop(i)
                         save_targets(targets)
-                        st.session_state.edit_idx = None
+                        if st.session_state.edit_idx == i:
+                            st.session_state.edit_idx = None
                         st.rerun()
-                    else:
-                        st.error("이름과 URL은 필수 항목입니다.")
-                if cancel_btn:
+                        
+    # 수정 폼은 그리드 아래에 크게 표시
+    if st.session_state.edit_idx is not None and st.session_state.edit_idx < len(targets):
+        i = st.session_state.edit_idx
+        target = targets[i]
+        st.divider()
+        st.markdown(f"### ✏️ '{target['name']}' 타겟 수정")
+        with st.form(key=f"edit_form"):
+            edit_name = st.text_input("타겟 이름", value=target['name'])
+            edit_url = st.text_input("URL", value=target['url'])
+            edit_selector = st.text_input("CSS 선택자", value=target.get('selector', 'body'))
+            edit_success = st.text_input("성공 텍스트 (쉼표로 구분)", value=",".join(target['success_text']))
+            edit_failure = st.text_input("실패 텍스트 (쉼표로 구분)", value=",".join(target['failure_text']))
+            
+            with st.expander("⚙️ 고급 설정 (정규화 및 필터링)"):
+                st.info("성공/실패 텍스트를 비워두면 **[모든 텍스트 변경 감지(Diff) 모드]**로 동작합니다.")
+                edit_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_selectors', [])))
+                edit_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_regex', [])))
+            
+            c1, c2 = st.columns(2)
+            with c1:
+                save_btn = st.form_submit_button("저장하기", use_container_width=True)
+            with c2:
+                cancel_btn = st.form_submit_button("취소", use_container_width=True)
+                
+            if save_btn:
+                if edit_name and edit_url:
+                    targets[i]['name'] = edit_name
+                    targets[i]['url'] = edit_url
+                    targets[i]['selector'] = edit_selector
+                    targets[i]['success_text'] = [t.strip() for t in edit_success.split(",") if t.strip()]
+                    targets[i]['failure_text'] = [t.strip() for t in edit_failure.split(",") if t.strip()]
+                    targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
+                    targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
+                    save_targets(targets)
                     st.session_state.edit_idx = None
                     st.rerun()
-                    
-        st.markdown("---")
+                else:
+                    st.error("이름과 URL은 필수 항목입니다.")
+            if cancel_btn:
+                st.session_state.edit_idx = None
+                st.rerun()
