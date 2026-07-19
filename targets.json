@@ -69,7 +69,7 @@
         "selector": "body",
         "success_text": [],
         "failure_text": [
-            "다 팔렸어요!"
+            "다 팔렸어요"
         ],
         "ignore_selectors": [],
         "ignore_regex": []
