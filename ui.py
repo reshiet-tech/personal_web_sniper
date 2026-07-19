@@ -108,14 +108,22 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
             if new_url:
                 with st.spinner("브라우저 창이 열리면 마우스로 원하는 구역을 클릭하세요!"):
                     try:
-                        result = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", new_url], text=True).strip()
-                        if result and result != "body":
-                            st.session_state['add_temp_selector'] = result
+                        result_str = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", new_url], text=True).strip()
+                        if result_str and result_str != "body":
+                            try:
+                                data = json.loads(result_str)
+                                st.session_state['add_temp_selector'] = data.get('selector', 'body')
+                                st.session_state['add_temp_text'] = data.get('text', '')
+                            except json.JSONDecodeError:
+                                st.session_state['add_temp_selector'] = result_str
                             st.rerun()
                     except Exception as e:
                         st.error(f"실행 오류: {e}")
             else:
                 st.warning("URL을 먼저 입력해주세요!")
+                
+    if st.session_state.get('add_temp_text'):
+        st.success(f"📌 선택된 구역의 텍스트 미리보기:\n\n`{st.session_state['add_temp_text'][:100]}...`")
                 
     new_success = st.text_input("성공 텍스트 (쉼표로 구분, 예: 구매하기,장바구니 담기)")
     new_failure = st.text_input("실패 텍스트 (쉼표로 구분, 예: 품절,판매종료,예약마감)")
@@ -177,14 +185,22 @@ else:
                         if edit_url:
                             with st.spinner("창이 열리면 원하는 구역을 클릭하세요!"):
                                 try:
-                                    result = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", edit_url], text=True).strip()
-                                    if result and result != "body":
-                                        st.session_state[f'edit_temp_selector_{i}'] = result
+                                    result_str = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", edit_url], text=True).strip()
+                                    if result_str and result_str != "body":
+                                        try:
+                                            data = json.loads(result_str)
+                                            st.session_state[f'edit_temp_selector_{i}'] = data.get('selector', 'body')
+                                            st.session_state[f'edit_temp_text_{i}'] = data.get('text', '')
+                                        except json.JSONDecodeError:
+                                            st.session_state[f'edit_temp_selector_{i}'] = result_str
                                         st.rerun()
                                 except Exception as e:
                                     st.error(f"실행 오류: {e}")
                         else:
                             st.warning("URL을 입력해주세요!")
+                            
+                    if st.session_state.get(f'edit_temp_text_{i}'):
+                        st.success(f"📌 선택된 구역의 텍스트:\n\n`{st.session_state[f'edit_temp_text_{i}'][:100]}...`")
                             
                     edit_success = st.text_input("성공 텍스트", value=",".join(target['success_text']), key=f"edit_success_{i}")
                     edit_failure = st.text_input("실패 텍스트", value=",".join(target['failure_text']), key=f"edit_failure_{i}")

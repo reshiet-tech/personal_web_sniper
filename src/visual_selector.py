@@ -49,12 +49,13 @@ async def run(url):
                         e.stopPropagation();
                         e.target.classList.remove('web-sniper-hover');
                         const selector = getCssSelector(e.target);
+                        const text = e.target.innerText || e.target.textContent || "";
                         
                         document.removeEventListener('mouseover', mouseOverHandler, true);
                         document.removeEventListener('mouseout', mouseOutHandler, true);
                         document.removeEventListener('click', clickHandler, true);
                         
-                        resolve(selector);
+                        resolve(JSON.stringify({selector: selector, text: text.trim()}));
                     };
 
                     document.addEventListener('mouseover', mouseOverHandler, true);
@@ -65,8 +66,8 @@ async def run(url):
             """
             
             # Wait for user to click
-            selector = await page.evaluate(js_code)
-            print(selector)
+            result_json = await page.evaluate(js_code)
+            print(result_json)
             
         except Exception as e:
             print("body", file=sys.stderr)
