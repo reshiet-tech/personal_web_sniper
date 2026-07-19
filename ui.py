@@ -92,18 +92,27 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
         new_success = st.text_input("성공 텍스트 (쉼표로 구분, 예: 구매하기,장바구니 담기)")
         new_failure = st.text_input("실패 텍스트 (쉼표로 구분, 예: 품절,판매종료,예약마감)")
         
+        with st.expander("⚙️ 고급 설정 (정규화 및 필터링)"):
+            st.info("성공/실패 텍스트를 비워두면 **[모든 텍스트 변경 감지(Diff) 모드]**로 동작합니다.")
+            new_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", help="HTML에서 아예 삭제할 요소 (예: .ad-banner, #counter)")
+            new_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", help="텍스트에서 지워버릴 패턴 (예: [0-9]{2}:[0-9]{2})")
+            
         submit_btn = st.form_submit_button("추가하기")
         if submit_btn:
             if new_name and new_url:
                 success_list = [t.strip() for t in new_success.split(",") if t.strip()]
                 failure_list = [t.strip() for t in new_failure.split(",") if t.strip()]
+                ignore_sel_list = [t.strip() for t in new_ignore_selectors.split("\n") if t.strip()]
+                ignore_reg_list = [t.strip() for t in new_ignore_regex.split("\n") if t.strip()]
                 
                 targets.append({
                     "name": new_name,
                     "url": new_url,
                     "selector": new_selector,
                     "success_text": success_list,
-                    "failure_text": failure_list
+                    "failure_text": failure_list,
+                    "ignore_selectors": ignore_sel_list,
+                    "ignore_regex": ignore_reg_list
                 })
                 save_targets(targets)
                 st.success(f"'{new_name}' 추가 완료!")
@@ -126,8 +135,10 @@ else:
             with col1:
                 st.markdown(f"**{target['name']}**")
                 st.caption(f"🔗 {target['url']}")
-                st.text(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음'}")
+                st.text(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (변경 감지 모드)'}")
                 st.text(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
+                if target.get('ignore_selectors') or target.get('ignore_regex'):
+                    st.caption("⚙️ 정규화(Ignore) 설정 적용됨")
             with col2:
                 if st.button("수정", key=f"edit_btn_{i}"):
                     st.session_state.edit_idx = i
@@ -149,6 +160,11 @@ else:
                 edit_success = st.text_input("성공 텍스트 (쉼표로 구분)", value=",".join(target['success_text']))
                 edit_failure = st.text_input("실패 텍스트 (쉼표로 구분)", value=",".join(target['failure_text']))
                 
+                with st.expander("⚙️ 고급 설정 (정규화 및 필터링)"):
+                    st.info("성공/실패 텍스트를 비워두면 **[모든 텍스트 변경 감지(Diff) 모드]**로 동작합니다.")
+                    edit_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_selectors', [])))
+                    edit_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", value="\n".join(target.get('ignore_regex', [])))
+                
                 c1, c2 = st.columns(2)
                 with c1:
                     save_btn = st.form_submit_button("저장하기")
@@ -162,6 +178,8 @@ else:
                         targets[i]['selector'] = edit_selector
                         targets[i]['success_text'] = [t.strip() for t in edit_success.split(",") if t.strip()]
                         targets[i]['failure_text'] = [t.strip() for t in edit_failure.split(",") if t.strip()]
+                        targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
+                        targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
                         save_targets(targets)
                         st.session_state.edit_idx = None
                         st.rerun()
