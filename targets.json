@@ -6,7 +6,9 @@
         "success_text": [
             "확정"
         ],
-        "failure_text": []
+        "failure_text": [
+            "예약 가능한 객실이 없습니다."
+        ]
     },
     {
         "name": "하나투어_양양 쏠비치",
@@ -15,7 +17,9 @@
         "success_text": [
             "확정"
         ],
-        "failure_text": []
+        "failure_text": [
+            "예약 가능한 객실이 없습니다."
+        ]
     },
     {
         "name": "여기어때_양양 쏠비치",
