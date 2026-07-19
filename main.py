@@ -50,6 +50,18 @@ async def check_site_status(page, target, snapshots):
                 logger.info(f"[{name}] 상태: 불가능 (품절/예약마감)")
             else:
                 logger.info(f"[{name}] 감지 대기 중...")
+        elif failure_texts:
+            # 성공 키워드는 비어있고 실패 키워드만 있는 경우 -> "실패 키워드가 사라지면 성공"으로 간주 (리버스 트리거)
+            if not is_failure:
+                # 과거 상태에는 실패 키워드가 있었는지 확인 (계속 알림 방지)
+                was_failure = any(text in old_content for text in failure_texts) if old_content else True
+                if was_failure:
+                    should_alert = True
+                    alert_reason = "실패 키워드(품절/마감) 사라짐 감지"
+                else:
+                    logger.info(f"[{name}] 상태: 구매/예약 가능 상태 유지 중 (알림 생략)")
+            else:
+                logger.info(f"[{name}] 상태: 불가능 (품절/예약마감 유지)")
         else:
             # 단순 변경 감지 모드
             if has_changed and old_content:
