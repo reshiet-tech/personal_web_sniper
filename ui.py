@@ -5,6 +5,8 @@ import subprocess
 import re
 from urllib.parse import urlparse
 
+APP_VERSION = "v1.1.0"
+
 TARGETS_FILE = "targets.json"
 YML_FILE = ".github/workflows/sniper.yml"
 
@@ -78,6 +80,10 @@ if st.sidebar.button("GitHub에 즉시 업데이트", type="primary"):
                 st.sidebar.success("✅ 업데이트 완료! 서버에 반영되었습니다.")
         except Exception as e:
             st.sidebar.error(f"업데이트 실패: {e}")
+
+    st.sidebar.divider()
+    st.sidebar.caption(f"🚀 웹 스나이퍼 버전: {APP_VERSION}")
+
 def load_targets():
     if not os.path.exists(TARGETS_FILE):
         return []
