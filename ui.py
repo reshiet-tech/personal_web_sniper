@@ -3,6 +3,7 @@ import json
 import os
 import subprocess
 import re
+from urllib.parse import urlparse
 
 TARGETS_FILE = "targets.json"
 YML_FILE = ".github/workflows/sniper.yml"
@@ -140,7 +141,11 @@ else:
     for i, target in enumerate(targets):
         with cols[i % 2]:
             with st.container(border=True):
-                st.markdown(f"#### {target['name']}")
+                # 파비콘(아이콘) 주소 추출
+                domain = urlparse(target['url']).netloc
+                favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
+                
+                st.markdown(f"#### <img src='{favicon_url}' width='24' style='vertical-align: middle; margin-right: 8px; border-radius: 4px;'/> {target['name']}", unsafe_allow_html=True)
                 # 긴 URL 대신 버튼식으로 변경
                 st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)
                 
