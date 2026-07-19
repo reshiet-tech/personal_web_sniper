@@ -3,86 +3,76 @@
         "name": "하나투어_삼척 쏠비치",
         "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001446&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
         "selector": "body",
-        "success_text": [
-            "확정"
-        ],
+        "success_text": [],
         "failure_text": [
             "예약 가능한 객실이 없습니다."
-        ]
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "하나투어_양양 쏠비치",
         "url": "https://wtdom2.hanatour.com/DH/dh_detail.asp?wGdsSDate=20260814&wGdsEDate=20260816&wGdsCode=DHC001466&wGdsArea1=&wGdsArea2=&fDHRmCnt=1&fDHsearchTXT=&fDHRoominfo=%5B%5B5%2C%5B3%2C8%2C10%5D%5D%5D&fDHDateText=2026.08.14%2528%25uAE08%2529%2520-%25202026.08.16%2528%25uC77C%2529%25202%25uBC15&wGdsOrder=",
         "selector": "body",
-        "success_text": [
-            "확정"
-        ],
+        "success_text": [],
         "failure_text": [
             "예약 가능한 객실이 없습니다."
-        ]
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "여기어때_양양 쏠비치",
         "url": "https://www.yeogi.com/domestic-accommodations/6578?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=쏠비치%20양양%20리조트",
         "selector": "body",
-        "success_text": [
-            "대기예약",
-            "예약하기",
-            "예약가능",
-            "스위트"
-        ],
+        "success_text": [],
         "failure_text": [
             "선택한 날짜의 객실은 매진되었어요"
-        ]
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "여기어때_삼척 쏠비치",
         "url": "https://www.yeogi.com/domestic-accommodations/7479?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=쏠비치%20삼척%20리조트",
         "selector": "body",
-        "success_text": [
-            "대기예약",
-            "예약하기",
-            "예약가능",
-            "스위트"
-        ],
+        "success_text": [],
         "failure_text": [
             "선택한 날짜의 객실은 매진되었어요"
-        ]
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "여기어때_브리드양양",
         "url": "https://www.yeogi.com/domestic-accommodations/68602?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=브리드%20호텔%20양양",
         "selector": "body",
-        "success_text": [
-            "라이즈업 미디움",
-            "라이즈업 엑스라지",
-            "객실 예약"
-        ],
+        "success_text": [],
         "failure_text": [
             "선택한 날짜의 객실은 매진되었어요"
-        ]
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "스위치2",
         "url": " https://store.nintendo.co.kr/beeskb6aakor",
         "selector": "body",
-        "success_text": [
-            "구매 가능",
-            "구매 하기"
-        ],
-        "failure_text": []
+        "success_text": [],
+        "failure_text": [],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "이마트_스위치2",
         "url": "https://eapp.emart.com/webapp/digital/view/4902370552690?storeCode=1480&trcknCode=rewardlink",
         "selector": "body",
-        "success_text": [
-            "구매하기",
-            "구매가능"
-        ],
+        "success_text": [],
         "failure_text": [
             "다 팔렸어요!"
-        ]
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": []
     },
     {
         "name": "컬리_스위치2",
