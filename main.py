@@ -7,6 +7,7 @@ from src.config import load_targets, get_logger
 from src.notifier import send_telegram_message
 from src.comparator import load_snapshots, save_snapshots, get_text_diff
 from src.fetcher import fetch_and_normalize
+from src.ai_filter import evaluate_diff_with_ai
 
 logger = get_logger(__name__)
 
@@ -56,6 +57,15 @@ async def check_site_status(page, target, snapshots):
                 alert_reason = "웹페이지 내용 변경 감지"
             else:
                 logger.info(f"[{name}] 변경사항 없음")
+
+        if should_alert:
+            # AI 필터링 (키워드 모드가 아닌 단순 Diff 모드일 경우에만 적용)
+            if not success_texts:
+                logger.info(f"[{name}] AI에게 변경점 유의미성 질의 중...")
+                is_meaningful = evaluate_diff_with_ai(name, added, removed)
+                if not is_meaningful:
+                    should_alert = False
+                    logger.info(f"[{name}] AI 판단: 무의미한 변경으로 알림 생략")
 
         if should_alert:
             logger.info(f"[{name}] 상태 변경 감지! ({alert_reason})")
