@@ -36,6 +36,7 @@ jobs:
           # GitHub Repository의 Settings -> Secrets and variables -> Actions 에 아래 환경변수들을 등록해야 합니다.
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           python main.py
 
