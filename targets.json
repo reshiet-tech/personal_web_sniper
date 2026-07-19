@@ -47,7 +47,7 @@
     {
         "name": "스위치2",
         "url": " https://store.nintendo.co.kr/beeskb6aakor",
-        "selector": "body",
+        "selector": "main#maincontent > div.columns > div.column.main > div.product-info-main",
         "success_text": [],
         "failure_text": [],
         "ignore_selectors": [],
@@ -67,18 +67,16 @@
     {
         "name": "컬리_스위치2",
         "url": "https://www.kurly.com/goods/1002056350",
-        "selector": "body",
+        "selector": "main#product-atf > section.css-ak1ao0.e1t9bmbx2 > div.css-m31y3a.e1t9bmbx4",
         "success_text": [],
-        "failure_text": [
-            "상품준비중입니다"
-        ],
+        "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": []
     },
     {
         "name": "컬리_스위치2",
         "url": "https://www.kurly.com/goods/1002035210?collectionCode=br-377",
-        "selector": "body",
+        "selector": "main#product-atf > section.css-ak1ao0.e1t9bmbx2 > div.css-m31y3a.e1t9bmbx4",
         "success_text": [],
         "failure_text": [
             "상품준비중입니다"
