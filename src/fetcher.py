@@ -12,7 +12,8 @@ async def fetch_and_normalize(page, target):
     ignore_regex = target.get("ignore_regex", [])
     
     await page.goto(url, wait_until="domcontentloaded", timeout=30000)
-    await asyncio.sleep(6)
+    # SPA 웹사이트(컬리 등)가 JS로 '담기' 버튼을 '품절'로 바꾸는 시간을 충분히 기다림
+    await asyncio.sleep(10)
     
     # DOM 정규화 및 불필요한 요소 제거
     if ignore_selectors:
