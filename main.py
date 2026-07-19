@@ -34,7 +34,8 @@ async def check_site_status(page, target, snapshots):
         has_changed = bool(added or removed)
         
         # 키워드 감지
-        is_success = any(text in content for text in success_texts) if success_texts else False
+        matched_success = next((text for text in success_texts if text in content), None)
+        is_success = bool(matched_success)
         is_failure = any(text in content for text in failure_texts) if failure_texts else False
 
         should_alert = False
@@ -43,7 +44,7 @@ async def check_site_status(page, target, snapshots):
         if success_texts:
             if is_success and not is_failure:
                 should_alert = True
-                alert_reason = "예약/구매 가능 키워드 감지"
+                alert_reason = f"성공 키워드 감지 ('{matched_success}')"
             elif is_failure:
                 logger.info(f"[{name}] 상태: 불가능 (품절/예약마감)")
             else:
