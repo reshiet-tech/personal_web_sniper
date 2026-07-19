@@ -91,6 +91,13 @@
         "success_text": [],
         "failure_text": [
             "상품준비중입니다"
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": [
+            "샛별배송",
+            "판매자배송",
+            "후기 [0-9]+건",
+            "2~5일 내 도착"
         ]
     },
     {
@@ -100,6 +107,13 @@
         "success_text": [],
         "failure_text": [
             "상품준비중입니다"
+        ],
+        "ignore_selectors": [],
+        "ignore_regex": [
+            "샛별배송",
+            "판매자배송",
+            "후기 [0-9]+건",
+            "2~5일 내 도착"
         ]
     }
 ]
