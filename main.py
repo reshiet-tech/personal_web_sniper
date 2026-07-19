@@ -62,11 +62,11 @@ async def check_site_status(page, target, snapshots):
             
             diff_msg = ""
             if added:
-                diff_msg += "\n<b>[추가된 내용]</b>\n" + "\n".join([f"+ {a}" for a in added[:5]])
-                if len(added) > 5: diff_msg += "\n... (생략)"
+                diff_msg += "\n<b>[추가된 내용]</b>\n" + "\n".join([f"+ {a}" for a in added[:30]])
+                if len(added) > 30: diff_msg += "\n... (생략)"
             if removed:
-                diff_msg += "\n<b>[삭제된 내용]</b>\n" + "\n".join([f"- {r}" for r in removed[:5]])
-                if len(removed) > 5: diff_msg += "\n... (생략)"
+                diff_msg += "\n<b>[삭제된 내용]</b>\n" + "\n".join([f"- {r}" for r in removed[:30]])
+                if len(removed) > 30: diff_msg += "\n... (생략)"
                 
             message = f"🚨 <b>{name} 스나이퍼 알림</b> 🚨\n\n✅ <b>상태:</b> {alert_reason}\n🔗 <b>링크:</b> <a href='{url}'>바로가기</a>\n{diff_msg}"
             send_telegram_message(message)

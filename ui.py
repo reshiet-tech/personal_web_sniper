@@ -66,7 +66,13 @@ if st.sidebar.button("GitHub에 즉시 업데이트", type="primary"):
                 st.sidebar.info("새로 변경된 사항이 없습니다.")
             else:
                 subprocess.run(["git", "add", "targets.json", YML_FILE], check=True)
-                subprocess.run(["git", "commit", "-m", "UI에서 타겟 목록 및 주기 업데이트"], check=True)
+                try:
+                    subprocess.run(["git", "commit", "-m", "UI에서 타겟 목록 및 주기 업데이트"], check=True)
+                except subprocess.CalledProcessError:
+                    pass # 커밋할 내용이 없는 경우 무시 (이미 커밋된 상태 등)
+                
+                # 깃허브 액션이 백그라운드에서 푸시한 스냅샷을 충돌 없이 병합
+                subprocess.run(["git", "pull", "--rebase", "--autostash"], check=True)
                 subprocess.run(["git", "push"], check=True)
                 st.sidebar.success("✅ 업데이트 완료! 서버에 반영되었습니다.")
         except Exception as e:
