@@ -91,5 +91,20 @@
         "ignore_selectors": [],
         "ignore_regex": [],
         "use_simple_fetch": true
+    },
+    {
+        "name": "8월 난지 글램핑",
+        "url": "https://yeyak.seoul.go.kr/web/reservation/selectReservView.do?rsv_svc_id=S260702132310472718&currentPage=3",
+        "selector": "body",
+        "success_text": [
+            "4/5",
+            "3/5",
+            "2/5",
+            "1/5"
+        ],
+        "failure_text": [],
+        "ignore_selectors": [],
+        "ignore_regex": [],
+        "use_simple_fetch": true
     }
 ]
