@@ -150,8 +150,6 @@ if st.sidebar.button("GitHub에 즉시 업데이트", type="primary"):
     st.sidebar.divider()
     st.sidebar.caption(f"🚀 웹 스나이퍼 버전: {APP_VERSION}")
 
-    st.sidebar.caption(f"🚀 웹 스나이퍼 버전: {APP_VERSION}")
-
 def load_targets():
     if IS_CLOUD and GITHUB_TOKEN:
         try:
