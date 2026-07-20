@@ -61,10 +61,12 @@
         "selector": "body",
         "success_text": [],
         "failure_text": [
-            "다 팔렸어요"
+            "다 팔렸어요",
+            "판매가 종료되었어요"
         ],
         "ignore_selectors": [],
-        "ignore_regex": []
+        "ignore_regex": [],
+        "use_simple_fetch": false
     },
     {
         "name": "컬리_스위치2",
