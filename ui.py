@@ -186,37 +186,7 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
     new_name = st.text_input("타겟 이름 (예: 아이폰 15 프로)")
     new_url = st.text_input("URL (실제 감시할 상품 상세 페이지 주소)")
     
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        new_selector = st.text_input("CSS 선택자", value=st.session_state['add_temp_selector'], key=f"add_sel_input_{st.session_state['add_sel_counter']}")
-    with c2:
-        st.write("")
-        st.write("")
-        if IS_CLOUD:
-            st.button("🚫 콕 찍기 (클라우드 불가)", key="btn_add_visual_disabled", disabled=True, use_container_width=True)
-            st.caption("모바일/클라우드에선 단순 스크래핑(body)을 사용하세요.")
-        else:
-            if st.button("🔍 화면에서 콕 찍기", key="btn_add_visual", use_container_width=True):
-                if new_url:
-                    with st.spinner("브라우저 창이 열리면 마우스로 원하는 구역을 클릭하세요!"):
-                        try:
-                            result_str = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", new_url], text=True).strip()
-                            if result_str and result_str != "body":
-                                try:
-                                    data = json.loads(result_str)
-                                    st.session_state['add_temp_selector'] = data.get('selector', 'body')
-                                    st.session_state['add_temp_text'] = data.get('text', '')
-                                except json.JSONDecodeError:
-                                    st.session_state['add_temp_selector'] = result_str
-                                st.session_state['add_sel_counter'] += 1
-                                st.rerun()
-                        except Exception as e:
-                            st.error(f"실행 오류: {e}")
-                else:
-                    st.warning("URL을 먼저 입력해주세요!")
-                
-    if st.session_state.get('add_temp_text'):
-        st.success(f"📌 선택된 구역의 텍스트 미리보기:\n\n`{st.session_state['add_temp_text'][:100]}...`")
+    new_selector = st.text_input("CSS 선택자 (기본값 body를 권장합니다)", value="body")
                 
     new_success = st.text_input("성공 텍스트 (쉼표로 구분, 예: 구매하기,장바구니 담기)")
     new_failure = st.text_input("실패 텍스트 (쉼표로 구분, 예: 품절,판매종료,예약마감)")
@@ -277,31 +247,7 @@ else:
                     edit_name = st.text_input("타겟 이름", value=target['name'], key=f"edit_name_{i}")
                     edit_url = st.text_input("URL", value=target['url'], key=f"edit_url_{i}")
                     
-                    edit_selector = st.text_input("CSS 선택자", value=st.session_state[f'edit_temp_selector_{i}'], key=f"edit_sel_input_{i}_{st.session_state[f'edit_sel_counter_{i}']}")
-                    if IS_CLOUD:
-                        st.button("🚫 콕 찍기 (클라우드 불가)", key=f"btn_edit_visual_disabled_{i}", disabled=True, use_container_width=True)
-                    else:
-                        if st.button("🔍 화면에서 콕 찍기", key=f"btn_edit_visual_{i}", use_container_width=True):
-                            if edit_url:
-                                with st.spinner("창이 열리면 원하는 구역을 클릭하세요!"):
-                                    try:
-                                        result_str = subprocess.check_output(["venv/bin/python", "src/visual_selector.py", edit_url], text=True).strip()
-                                        if result_str and result_str != "body":
-                                            try:
-                                                data = json.loads(result_str)
-                                                st.session_state[f'edit_temp_selector_{i}'] = data.get('selector', 'body')
-                                                st.session_state[f'edit_temp_text_{i}'] = data.get('text', '')
-                                            except json.JSONDecodeError:
-                                                st.session_state[f'edit_temp_selector_{i}'] = result_str
-                                            st.session_state[f'edit_sel_counter_{i}'] += 1
-                                            st.rerun()
-                                    except Exception as e:
-                                        st.error(f"실행 오류: {e}")
-                            else:
-                                st.warning("URL을 입력해주세요!")
-                            
-                    if st.session_state.get(f'edit_temp_text_{i}'):
-                        st.success(f"📌 선택된 구역의 텍스트:\n\n`{st.session_state[f'edit_temp_text_{i}'][:100]}...`")
+                    edit_selector = st.text_input("CSS 선택자", value=target.get('selector', 'body'), key=f"edit_sel_input_{i}")
                             
                     edit_success = st.text_input("성공 텍스트", value=",".join(target['success_text']), key=f"edit_success_{i}")
                     edit_failure = st.text_input("실패 텍스트", value=",".join(target['failure_text']), key=f"edit_failure_{i}")
