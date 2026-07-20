@@ -5,8 +5,8 @@ on:
     branches:
       - main
   schedule:
-    # 15분마다 주기적으로 실행 (UTC 기준)
-    - cron: '*/5 * * * *'
+    # 1시간마다 주기적으로 실행 (무한 동력 모드에서 봇 교체용)
+    - cron: '0 * * * *'
   workflow_dispatch: # GitHub Actions 탭에서 수동으로 실행 가능하게 함
 
 concurrency:
@@ -42,13 +42,6 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
-          python main.py
-
-      - name: Commit snapshots
-        run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/snapshots.json
-          git commit -m "Update snapshots [skip ci]" || echo "No changes to commit"
-          git pull --rebase -X theirs --autostash
-          git push
+          python main.py

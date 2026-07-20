@@ -34,29 +34,7 @@ def update_cron(new_cron):
 
 # 사이드바 설정 영역
 st.sidebar.title("⚙️ 감시 주기 설정")
-cron_options = {
-    "*/5 * * * *": "5분마다",
-    "*/10 * * * *": "10분마다",
-    "*/15 * * * *": "15분마다",
-    "*/30 * * * *": "30분마다",
-    "0 * * * *": "1시간마다",
-    "0 */6 * * *": "6시간마다",
-    "0 0 * * *": "하루 1번 (자정)"
-}
-current_cron = get_current_cron()
-current_label = cron_options.get(current_cron, "15분마다")
-# 안전한 index 찾기
-try:
-    default_idx = list(cron_options.values()).index(current_label)
-except ValueError:
-    default_idx = 1
-
-selected_label = st.sidebar.selectbox("스나이퍼 봇 감시 주기", list(cron_options.values()), index=default_idx)
-selected_cron = [k for k, v in cron_options.items() if v == selected_label][0]
-
-if selected_cron != current_cron:
-    update_cron(selected_cron)
-    st.sidebar.success(f"감시 주기가 {selected_label}로 변경되었습니다. (서버 반영 필요)")
+st.sidebar.info("🚀 **무한 동력 모드 가동 중**\n\n봇이 깃허브 서버 제한을 피해 24시간 내내 3~5분 간격으로 무한 광클 감시를 수행합니다. (주기 설정 불필요)")
 
 st.sidebar.markdown("---")
 st.sidebar.title("🚀 서버 반영")

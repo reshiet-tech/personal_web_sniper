@@ -1,5 +1,8 @@
 import asyncio
 import random
+import os
+import time
+import subprocess
 from playwright.async_api import async_playwright
 from playwright_stealth import Stealth
 
@@ -103,38 +106,62 @@ async def check_site_status(page, target, snapshots):
         logger.error(f"[{name}] 확인 중 에러 발생: {e}")
 
 async def main():
-    logger.info("=== 웹 스나이퍼 봇 실행 시작 ===")
+    logger.info("=== 24/7 연속 감시 봇 (무한 동력 모드) 실행 시작 ===")
     
-    targets = load_targets()
-    if not targets:
-        logger.info("등록된 타겟이 없습니다.")
-        return
+    start_time = time.time()
+    max_runtime = 5 * 3600 + 45 * 60  # 5시간 45분 (GitHub Actions 타임아웃 6시간 방지용)
 
-    async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
-        user_agent = random.choice(USER_AGENTS)
-        context = await browser.new_context(
-            user_agent=user_agent,
-            viewport={"width": 1920, "height": 1080},
-            locale="ko-KR",
-            timezone_id="Asia/Seoul"
-        )
-        page = await context.new_page()
-        
-        stealth = Stealth()
-        await stealth.apply_stealth_async(page)
+    while True:
+        targets = load_targets()
+        if not targets:
+            logger.info("등록된 타겟이 없습니다.")
+            await asyncio.sleep(60)
+            continue
 
-        snapshots = load_snapshots()
+        async with async_playwright() as p:
+            browser = await p.chromium.launch(headless=True)
+            user_agent = random.choice(USER_AGENTS)
+            context = await browser.new_context(
+                user_agent=user_agent,
+                viewport={"width": 1920, "height": 1080},
+                locale="ko-KR",
+                timezone_id="Asia/Seoul"
+            )
+            page = await context.new_page()
+            
+            stealth = Stealth()
+            await stealth.apply_stealth_async(page)
 
-        for target in targets:
-            await asyncio.sleep(random.uniform(1.0, 3.0))
-            await check_site_status(page, target, snapshots)
-            await asyncio.sleep(random.uniform(3.0, 7.0))
+            snapshots = load_snapshots()
 
-        save_snapshots(snapshots)
-        await browser.close()
-        
-    logger.info("=== 웹 스나이퍼 봇 실행 종료 ===")
+            for target in targets:
+                await asyncio.sleep(random.uniform(1.0, 3.0))
+                await check_site_status(page, target, snapshots)
+                await asyncio.sleep(random.uniform(3.0, 7.0))
+
+            save_snapshots(snapshots)
+            await browser.close()
+            
+        # 깃허브 액션 환경일 경우에만 매 루프마다 자동 Commit & Push
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            logger.info("최신 상태를 Git에 저장(Push) 중...")
+            subprocess.run(["git", "add", "data/snapshots.json"])
+            res = subprocess.run(["git", "commit", "-m", "Update snapshots (auto) [skip ci]"], capture_output=True)
+            if res.returncode == 0:
+                subprocess.run(["git", "pull", "--rebase", "-X", "theirs", "--autostash"], capture_output=True)
+                subprocess.run(["git", "push"], capture_output=True)
+                logger.info("Git 저장 완료.")
+            else:
+                logger.info("상태 변경 없음 (Commit 생략).")
+
+        if time.time() - start_time > max_runtime:
+            logger.info("=== 최대 실행 시간 도달. 다음 주기로 넘기기 위해 종료합니다 ===")
+            break
+            
+        # 다음 주기를 위해 3~5분 대기
+        wait_seconds = random.uniform(180, 300)
+        logger.info(f"다음 주기를 위해 {int(wait_seconds)}초 대기합니다...")
+        await asyncio.sleep(wait_seconds)
 
 if __name__ == "__main__":
     asyncio.run(main())
