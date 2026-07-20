@@ -78,20 +78,5 @@
         ],
         "ignore_selectors": [],
         "ignore_regex": []
-    },
-    {
-        "name": "7월 난지 글램핑",
-        "url": "https://yeyak.seoul.go.kr/web/reservation/selectReservView.do?rsv_svc_id=S260526165935182400&locale=ko",
-        "selector": "body",
-        "success_text": [
-            "4/5",
-            "3/5",
-            "2/5",
-            "1/5"
-        ],
-        "failure_text": [],
-        "ignore_selectors": [],
-        "ignore_regex": [],
-        "use_simple_fetch": true
     }
 ]
