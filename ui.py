@@ -32,9 +32,46 @@ def update_cron(new_cron):
         with open(YML_FILE, "w", encoding="utf-8") as f:
             f.write(new_content)
 
+# 설정 파일 경로
+SETTINGS_FILE = "data/settings.json"
+
+def load_settings():
+    if not os.path.exists(SETTINGS_FILE):
+        return {"loop_interval_sec": 180}
+    with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+def save_settings(settings_data):
+    os.makedirs(os.path.dirname(SETTINGS_FILE), exist_ok=True)
+    with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
+        json.dump(settings_data, f, ensure_ascii=False, indent=4)
+
 # 사이드바 설정 영역
 st.sidebar.title("⚙️ 감시 주기 설정")
-st.sidebar.info("🚀 **무한 동력 모드 가동 중**\n\n봇이 깃허브 서버 제한을 피해 24시간 내내 3~5분 간격으로 무한 광클 감시를 수행합니다. (주기 설정 불필요)")
+st.sidebar.info("🚀 **무한 동력 모드 가동 중**\n\n봇이 깃허브 서버 제한을 피해 24시간 내내 무한 감시를 수행합니다.")
+
+# 주기 옵션
+interval_options = {
+    10: "10초마다 (초광클)",
+    30: "30초마다 (빠름)",
+    60: "1분마다",
+    180: "3분마다 (권장)",
+    300: "5분마다",
+    600: "10분마다"
+}
+
+current_settings = load_settings()
+current_interval = current_settings.get("loop_interval_sec", 180)
+if current_interval not in interval_options:
+    current_interval = 180
+
+selected_label = st.sidebar.selectbox("루프 대기 시간 (간격)", list(interval_options.values()), index=list(interval_options.keys()).index(current_interval))
+selected_interval = [k for k, v in interval_options.items() if v == selected_label][0]
+
+if selected_interval != current_interval:
+    current_settings["loop_interval_sec"] = selected_interval
+    save_settings(current_settings)
+    st.sidebar.success(f"대기 시간이 {selected_label}로 변경되었습니다. (서버 반영 필요)")
 
 st.sidebar.markdown("---")
 st.sidebar.title("🚀 서버 반영")
@@ -43,10 +80,10 @@ if st.sidebar.button("GitHub에 즉시 업데이트", type="primary"):
     with st.spinner("서버에 업로드 중입니다..."):
         try:
             status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-            if "targets.json" not in status.stdout and "sniper.yml" not in status.stdout:
+            if "targets.json" not in status.stdout and "sniper.yml" not in status.stdout and "settings.json" not in status.stdout:
                 st.sidebar.info("새로 변경된 사항이 없습니다.")
             else:
-                subprocess.run(["git", "add", "targets.json", YML_FILE], check=True)
+                subprocess.run(["git", "add", "targets.json", YML_FILE, SETTINGS_FILE], check=True)
                 try:
                     subprocess.run(["git", "commit", "-m", "UI에서 타겟 목록 및 주기 업데이트"], check=True)
                 except subprocess.CalledProcessError:

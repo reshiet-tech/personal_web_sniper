@@ -158,9 +158,20 @@ async def main():
             logger.info("=== 최대 실행 시간 도달. 다음 주기로 넘기기 위해 종료합니다 ===")
             break
             
-        # 다음 주기를 위해 3~5분 대기
-        wait_seconds = random.uniform(180, 300)
-        logger.info(f"다음 주기를 위해 {int(wait_seconds)}초 대기합니다...")
+        # 설정된 주기 가져오기 (기본값 3분)
+        interval_sec = 180
+        settings_file = "data/settings.json"
+        if os.path.exists(settings_file):
+            try:
+                with open(settings_file, "r", encoding="utf-8") as f:
+                    settings = json.load(f)
+                    interval_sec = settings.get("loop_interval_sec", 180)
+            except Exception as e:
+                logger.error(f"설정 파일 읽기 오류: {e}")
+                
+        # 약간의 랜덤성을 부여하여 차단 방지 (설정된 주기의 90% ~ 110%)
+        wait_seconds = random.uniform(interval_sec * 0.9, interval_sec * 1.1)
+        logger.info(f"다음 주기를 위해 {int(wait_seconds)}초 대기합니다... (목표 주기: {interval_sec}초)")
         await asyncio.sleep(wait_seconds)
 
 if __name__ == "__main__":
