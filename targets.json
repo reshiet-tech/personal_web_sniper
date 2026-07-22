@@ -27,17 +27,6 @@
         "ignore_regex": []
     },
     {
-        "name": "스위치2",
-        "url": " https://store.nintendo.co.kr/beeskb6aakor",
-        "selector": "main#maincontent > div.columns > div.column.main > div.product-info-main",
-        "success_text": [],
-        "failure_text": [
-            "품절"
-        ],
-        "ignore_selectors": [],
-        "ignore_regex": []
-    },
-    {
         "name": "이마트_스위치2",
         "url": "https://eapp.emart.com/webapp/digital/view/4902370552690?storeCode=1480&trcknCode=rewardlink",
         "selector": "body",
