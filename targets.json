@@ -27,19 +27,6 @@
         "ignore_regex": []
     },
     {
-        "name": "이마트_스위치2",
-        "url": "https://eapp.emart.com/webapp/digital/view/4902370552690?storeCode=1480&trcknCode=rewardlink",
-        "selector": "body",
-        "success_text": [],
-        "failure_text": [
-            "다 팔렸어요",
-            "판매가 종료되었어요"
-        ],
-        "ignore_selectors": [],
-        "ignore_regex": [],
-        "use_simple_fetch": false
-    },
-    {
         "name": "컬리_스위치2",
         "url": "https://www.kurly.com/goods/1002056350",
         "selector": "main#product-atf > section.css-ak1ao0.e1t9bmbx2 > div.css-m31y3a.e1t9bmbx4",
