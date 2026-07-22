@@ -25,16 +25,5 @@
         "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": []
-    },
-    {
-        "name": "컬리_스위치2",
-        "url": "https://www.kurly.com/goods/1002056350",
-        "selector": "main#product-atf > section.css-ak1ao0.e1t9bmbx2 > div.css-m31y3a.e1t9bmbx4",
-        "success_text": [],
-        "failure_text": [
-            "상품준비중입니다"
-        ],
-        "ignore_selectors": [],
-        "ignore_regex": []
     }
 ]
