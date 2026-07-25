@@ -25,5 +25,17 @@
         "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": []
+    },
+    {
+        "name": "11st_양양 쏠비치",
+        "url": "https://tour.m.11st.co.kr/MW/Tour/getInternalProducts/detail.tmall?mallType=tour&dispCtgrNo=980727&catalogNo=19421183&checkIn=20260814&checkOut=20260816&room=5,3&finalDscPrice=655960",
+        "selector": "body",
+        "success_text": [
+            "스위트"
+        ],
+        "failure_text": [],
+        "ignore_selectors": [],
+        "ignore_regex": [],
+        "use_simple_fetch": false
     }
 ]
