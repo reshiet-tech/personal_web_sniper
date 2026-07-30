@@ -36,7 +36,8 @@
         "failure_text": [],
         "ignore_selectors": [],
         "ignore_regex": [],
-        "use_simple_fetch": false
+        "use_simple_fetch": false,
+        "is_active": false
     },
     {
         "name": "11st_삼척 쏠비치",
