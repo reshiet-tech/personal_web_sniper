@@ -135,6 +135,9 @@ async def main():
             snapshots = load_snapshots()
 
             for target in targets:
+                if not target.get('is_active', True):
+                    logger.info(f"[{target['name']}] 비활성화 상태이므로 감시를 건너뜁니다.")
+                    continue
                 await asyncio.sleep(random.uniform(1.0, 3.0))
                 await check_site_status(page, target, snapshots)
                 await asyncio.sleep(random.uniform(3.0, 7.0))

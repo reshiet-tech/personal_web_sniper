@@ -286,8 +286,14 @@ else:
                     favicon_url = f"https://www.google.com/s2/favicons?domain={domain}&sz=64"
                     
                     st.markdown(f"#### <img src='{favicon_url}' width='24' style='vertical-align: middle; margin-right: 8px; border-radius: 4px;'/> {target['name']}", unsafe_allow_html=True)
-                    st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)
                     
+                    is_active = st.toggle("감시 활성화", value=target.get('is_active', True), key=f"toggle_active_{i}")
+                    if is_active != target.get('is_active', True):
+                        targets[i]['is_active'] = is_active
+                        save_targets(targets)
+                        st.rerun()
+
+                    st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)                    
                     st.caption(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (AI 판독)'}")
                     st.caption(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
                     if target.get('ignore_selectors') or target.get('ignore_regex'):
