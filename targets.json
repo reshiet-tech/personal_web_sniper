@@ -62,7 +62,7 @@
         "ignore_selectors": [],
         "ignore_regex": [],
         "use_simple_fetch": false,
-        "is_active": false
+        "is_active": true
     },
     {
         "name": "스위치2 젤다 왕눈",
