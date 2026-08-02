@@ -52,8 +52,8 @@
         "use_simple_fetch": false
     },
     {
-        "name": "야놀자_양양 쏠비치",
-        "url": "https://nol.yanolja.com/stay/domestic/3001599?srpKeyword=%EC%96%91%EC%96%91%20%EC%86%94%EB%B9%84%EC%B9%98&checkInDate=2026-08-14&checkOutDate=2026-08-16&adultCount=5&childrenAges=3%2C3%2C3",
+        "name": "야놀자_양양 쏠비치 15-16",
+        "url": "https://nol.yanolja.com/stay/domestic/3001599?srpKeyword=%EC%96%91%EC%96%91%20%EC%86%94%EB%B9%84%EC%B9%98&checkInDate=2026-08-15&checkOutDate=2026-08-16&adultCount=5&childrenAges=3%2C3%2C3",
         "selector": "body",
         "success_text": [
             "예약하기"
