@@ -30,7 +30,7 @@
     },
     {
         "name": "11st_양양 쏠비치",
-        "url": "https://tour.m.11st.co.kr/MW/Tour/getInternalProducts/detail.tmall?mallType=tour&dispCtgrNo=980727&catalogNo=19421183&checkIn=20260814&checkOut=20260816&room=5,3&finalDscPrice=655960",
+        "url": "https://tour.m.11st.co.kr/MW/Tour/getInternalProducts/detail.tmall?mallType=tour&dispCtgrNo=980727&catalogNo=19421183&checkIn=20260815&checkOut=20260816&room=5,3&finalDscPrice=0",
         "selector": "body",
         "success_text": [
             "스위트"
