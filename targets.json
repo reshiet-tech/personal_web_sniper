@@ -19,12 +19,13 @@
     },
     {
         "name": "여기어때_브리드양양",
-        "url": "https://www.yeogi.com/domestic-accommodations/68602?checkIn=2026-08-14&checkOut=2026-08-16&personal=8&searchKeyword=브리드%20호텔%20양양",
+        "url": "https://www.yeogi.com/domestic-accommodations/68602?checkIn=2026-08-15&checkOut=2026-08-16&personal=8",
         "selector": "div#room > div.css-uqi8ka",
         "success_text": [],
         "failure_text": [],
         "ignore_selectors": [],
-        "ignore_regex": []
+        "ignore_regex": [],
+        "use_simple_fetch": false
     },
     {
         "name": "11st_양양 쏠비치",
