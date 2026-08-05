@@ -4,7 +4,7 @@ from src.config import GEMINI_API_KEY, get_logger
 
 logger = get_logger(__name__)
 
-def evaluate_diff_with_ai(target_name: str, added: list, removed: list) -> bool:
+def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_prompt: str = "") -> bool:
     """
     Gemini API를 호출하여 이 변경사항(Diff)이 유의미한지 평가합니다.
     유의미하면 True, 무의미하면 False를 반환합니다.
@@ -17,11 +17,22 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list) -> bool:
     
     diff_text = f"추가된 내용:\n" + "\n".join(added) + "\n\n삭제된 내용:\n" + "\n".join(removed)
     
+    # 사용자가 직접 입력한 커스텀 프롬프트가 있다면 최우선으로 적용
+    custom_instruction = ""
+    if custom_prompt.strip():
+        custom_instruction = f"""
+    [사용자 특별 지시사항]
+    {custom_prompt.strip()}
+    위 지시사항에 부합하는 변경점이라면 무조건 'YES'라고 대답해!
+    """
+
     prompt = f"""
     너는 상품 재고 및 예약 모니터링을 담당하는 어시스턴트야.
     내가 웹페이지에서 감지한 텍스트 변경점(추가된 내용, 삭제된 내용)을 줄게.
     이 사이트의 이름은 [{target_name}] 야.
+    {custom_instruction}
 
+    [기본 규칙]
     변경점이 다음 중 하나라도 해당하면 무의미한 변경(가짜 알림)이므로 무조건 'NO' 라고 대답해:
     1. 날짜, 시간, 실시간 검색어, '당일특가' 같은 수식어의 변경
     2. 후기 개수, 찜 개수, 평점, 조회수 증감

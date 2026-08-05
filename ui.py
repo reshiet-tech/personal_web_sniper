@@ -194,6 +194,7 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
         new_use_simple_fetch = st.checkbox("단순 스크래핑 모드 (WAF 우회 및 초고속 동작)", value=False)
         new_ignore_selectors = st.text_area("무시할 CSS 선택자 (줄바꿈으로 구분)", help="HTML에서 아예 삭제할 요소 (예: .ad-banner, #counter)")
         new_ignore_regex = st.text_area("무시할 정규표현식 (줄바꿈으로 구분)", help="텍스트에서 지워버릴 패턴 (예: [0-9]{2}:[0-9]{2})")
+        new_ai_prompt = st.text_area("사용자 정의 AI 프롬프트 (조건 작성)", help="AI가 판단할 때 우선적으로 적용될 규칙을 입력하세요. (예: 가격이 30만원 이하로 떨어졌을 때만)")
         
     if st.button("추가하기", type="primary"):
         if new_name and new_url:
@@ -210,7 +211,8 @@ with st.expander("➕ 새로운 타겟 추가하기", expanded=False):
                 "failure_text": failure_list,
                 "ignore_selectors": ignore_sel_list,
                 "ignore_regex": ignore_reg_list,
-                "use_simple_fetch": new_use_simple_fetch
+                "use_simple_fetch": new_use_simple_fetch,
+                "ai_prompt": new_ai_prompt.strip()
             })
             save_targets(targets)
             st.session_state['add_temp_selector'] = 'body' # 리셋
@@ -254,6 +256,7 @@ else:
                         edit_use_simple_fetch = st.checkbox("단순 스크래핑 모드 (WAF 우회)", value=target.get('use_simple_fetch', False), key=f"edit_simple_{i}")
                         edit_ignore_selectors = st.text_area("무시할 CSS 선택자", value="\n".join(target.get('ignore_selectors', [])), key=f"edit_ig_sel_{i}")
                         edit_ignore_regex = st.text_area("무시할 정규표현식", value="\n".join(target.get('ignore_regex', [])), key=f"edit_ig_reg_{i}")
+                        edit_ai_prompt = st.text_area("사용자 정의 AI 프롬프트 (조건 작성)", value=target.get('ai_prompt', ''), key=f"edit_ai_prompt_{i}")
                     
                     c1, c2 = st.columns(2)
                     with c1:
@@ -267,6 +270,7 @@ else:
                                 targets[i]['ignore_selectors'] = [t.strip() for t in edit_ignore_selectors.split("\n") if t.strip()]
                                 targets[i]['ignore_regex'] = [t.strip() for t in edit_ignore_regex.split("\n") if t.strip()]
                                 targets[i]['use_simple_fetch'] = edit_use_simple_fetch
+                                targets[i]['ai_prompt'] = edit_ai_prompt.strip()
                                 save_targets(targets)
                                 st.session_state.edit_idx = None
                                 if f'edit_temp_selector_{i}' in st.session_state:
@@ -296,6 +300,8 @@ else:
                     st.link_button("🔗 웹사이트 바로가기", target['url'], use_container_width=True)                    
                     st.caption(f"✅ 성공 텍스트: {', '.join(target['success_text']) if target['success_text'] else '없음 (AI 판독)'}")
                     st.caption(f"❌ 실패 텍스트: {', '.join(target['failure_text']) if target['failure_text'] else '없음'}")
+                    if target.get('ai_prompt'):
+                        st.caption(f"🤖 AI 프롬프트: {target['ai_prompt']}")
                     if target.get('ignore_selectors') or target.get('ignore_regex'):
                         st.caption("⚙️ 필터링(Ignore) 옵션 켜짐")
                         

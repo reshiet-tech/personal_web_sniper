@@ -80,7 +80,8 @@ async def check_site_status(page, target, snapshots):
             # AI 필터링 (키워드 모드가 아닌 단순 Diff 모드일 경우에만 적용)
             if not success_texts and not failure_texts:
                 logger.info(f"[{name}] AI에게 변경점 유의미성 질의 중...")
-                is_meaningful = evaluate_diff_with_ai(name, added, removed)
+                custom_ai_prompt = target.get('ai_prompt', "")
+                is_meaningful = evaluate_diff_with_ai(name, added, removed, custom_ai_prompt)
                 if not is_meaningful:
                     should_alert = False
                     logger.info(f"[{name}] AI 판단: 무의미한 변경으로 알림 생략")
