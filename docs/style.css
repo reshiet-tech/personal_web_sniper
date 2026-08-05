@@ -193,6 +193,14 @@ button {
 }
 
 /* Advanced Settings */
+.add-section summary {
+    outline: none;
+    list-style: none; /* removes default arrow */
+}
+.add-section summary::-webkit-details-marker {
+    display: none;
+}
+
 .advanced-settings {
     background: rgba(0,0,0,0.2);
     border-radius: 8px;
