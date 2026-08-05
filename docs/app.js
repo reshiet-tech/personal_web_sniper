@@ -68,6 +68,9 @@ function parseCronExpression(cron) {
     return cron;
 }
 
+let settingsSha = "";
+let currentIntervalSec = 180;
+
 async function loadMetadata() {
     try {
         const configText = await fetchGithubFile("src/config.py");
@@ -76,15 +79,77 @@ async function loadMetadata() {
             if (versionMatch) document.getElementById("app-version").innerText = versionMatch[1];
         }
 
-        const ymlText = await fetchGithubFile(".github/workflows/sniper.yml");
-        if (ymlText) {
-            const cronMatch = ymlText.match(/cron:\s*["']([^"']+)["']/);
-            if (cronMatch) document.getElementById("app-interval").innerText = parseCronExpression(cronMatch[1]);
+        const settingsResponse = await fetch(`https://api.github.com/repos/${REPO}/contents/data/settings.json`, {
+            headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Accept": "application/vnd.github.v3+json" }
+        });
+        
+        if (settingsResponse.ok) {
+            const data = await settingsResponse.json();
+            settingsSha = data.sha;
+            const settingsObj = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+            currentIntervalSec = settingsObj.loop_interval_sec || 180;
+        } else {
+            // defaults to 180
+            currentIntervalSec = 180;
         }
+        
+        document.getElementById("app-interval").innerText = `${currentIntervalSec}초 (${Math.floor(currentIntervalSec/60)}분)`;
+
     } catch (e) {
         console.error("Failed to load metadata:", e);
     }
 }
+
+// Settings Modal
+const settingsModal = document.getElementById("settings-modal");
+document.getElementById("btn-settings").addEventListener("click", () => {
+    document.getElementById("setting-interval").value = currentIntervalSec;
+    settingsModal.classList.remove("hidden");
+});
+
+document.getElementById("btn-cancel-settings").addEventListener("click", () => {
+    settingsModal.classList.add("hidden");
+});
+
+document.getElementById("btn-save-settings").addEventListener("click", async () => {
+    let newInterval = parseInt(document.getElementById("setting-interval").value);
+    if (isNaN(newInterval) || newInterval < 180) {
+        alert("최소 180초(3분) 이상으로 설정해야 합니다.");
+        return;
+    }
+    
+    currentIntervalSec = newInterval;
+    const settingsObj = { loop_interval_sec: currentIntervalSec };
+    const contentStr = JSON.stringify(settingsObj, null, 4);
+    const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
+    
+    try {
+        const response = await fetch(`https://api.github.com/repos/${REPO}/contents/data/settings.json`, {
+            method: 'PUT',
+            headers: {
+                "Authorization": `token ${GITHUB_TOKEN}`,
+                "Accept": "application/vnd.github.v3+json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: "Update loop interval via Web Dashboard",
+                content: encodedContent,
+                sha: settingsSha || undefined
+            })
+        });
+
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        
+        const data = await response.json();
+        settingsSha = data.content.sha;
+        document.getElementById("app-interval").innerText = `${currentIntervalSec}초 (${Math.floor(currentIntervalSec/60)}분)`;
+        settingsModal.classList.add("hidden");
+        showToast("✅ 설정이 저장되었습니다!");
+    } catch (error) {
+        console.error(error);
+        alert("설정 저장에 실패했습니다: " + error.message);
+    }
+});
 
 btnRefresh.addEventListener("click", loadTargets);
 
