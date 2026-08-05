@@ -94,7 +94,9 @@ async def check_site_status(page, target, snapshots):
             
             diff_msg = ""
             if ai_summary:
-                diff_msg += f"\n💡 <b>AI 핵심 요약:</b>\n{ai_summary}\n"
+                if "오류가 발생하여" not in ai_summary:
+                    diff_msg += f"\n💡 <b>AI 핵심 요약:</b>\n{ai_summary}\n"
+                # 오류가 발생한 경우 요약 텍스트를 생략하여 텔레그램 미리보기가 돋보이게 함
             else:
                 if added:
                     diff_msg += "\n<b>[추가된 내용]</b>\n" + "\n".join([f"+ {a}" for a in added[:5]])
