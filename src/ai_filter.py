@@ -11,11 +11,17 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
     """
     if not GEMINI_API_KEY:
         # API 키가 없으면 기본적으로 유의미하다고 판단 (기존 로직 유지)
-        return True
+        return True, "API 키가 설정되지 않아 AI 요약을 건너뛰었습니다."
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key={GEMINI_API_KEY}"
     
     diff_text = f"추가된 내용:\n" + "\n".join(added) + "\n\n삭제된 내용:\n" + "\n".join(removed)
+    
+    # 너무 길 경우 앞/뒤만 남기고 자르기 (Gemini API 부하/타임아웃 방지)
+    max_length = 20000
+    if len(diff_text) > max_length:
+        half = max_length // 2
+        diff_text = diff_text[:half] + "\n\n... [중략] ...\n\n" + diff_text[-half:]
     
     # 사용자가 직접 입력한 커스텀 프롬프트가 있다면 최우선으로 적용
     custom_instruction = ""
@@ -68,32 +74,46 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
         }
     }
 
-    try:
-        response = requests.post(url, json=payload, timeout=30)
-        response.raise_for_status()
-        result = response.json()
-        
-        candidates = result.get("candidates", [])
-        if not candidates:
-            logger.warning(f"[{target_name}] AI 응답에 candidates가 없습니다. 결과: {result}")
+    import time
+    
+    for attempt in range(3):
+        try:
+            response = requests.post(url, json=payload, timeout=60)
+            
+            if response.status_code == 429:
+                logger.warning(f"[{target_name}] AI API 요청 한도 초과(429). {attempt+1}차 재시도 대기(10초)...")
+                time.sleep(10)
+                continue
+                
+            response.raise_for_status()
+            result = response.json()
+            
+            candidates = result.get("candidates", [])
+            if not candidates:
+                logger.warning(f"[{target_name}] AI 응답에 candidates가 없습니다. 결과: {result}")
+                return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
+                
+            candidate = candidates[0]
+            if "content" not in candidate:
+                logger.warning(f"[{target_name}] AI 응답이 필터링되었거나 내용이 없습니다. 결과: {candidate}")
+                return True, "AI 분석이 차단되었거나 내용을 요약할 수 없습니다."
+                
+            answer = candidate.get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+            logger.info(f"[{target_name}] AI 판독 결과: {answer}")
+            
+            if answer.upper().startswith("YES"):
+                parts = answer.split("|", 1)
+                summary = parts[1].strip() if len(parts) > 1 else "AI 판단: 조건이 충족되었습니다."
+                return True, summary
+            else:
+                return False, ""
+                
+        except Exception as e:
+            logger.error(f"[{target_name}] Gemini API 호출 중 오류 발생: {e}")
+            if attempt < 2:
+                time.sleep(5)
+                continue
+            # API 오류 시에는 안전하게 True를 반환하여 알림을 놓치지 않도록 함
             return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
             
-        candidate = candidates[0]
-        if "content" not in candidate:
-            logger.warning(f"[{target_name}] AI 응답이 필터링되었거나 내용이 없습니다. 결과: {candidate}")
-            return True, "AI 분석이 차단되었거나 내용을 요약할 수 없습니다."
-            
-        answer = candidate.get("content", {}).get("parts", [{}])[0].get("text", "").strip()
-        logger.info(f"[{target_name}] AI 판독 결과: {answer}")
-        
-        if answer.upper().startswith("YES"):
-            parts = answer.split("|", 1)
-            summary = parts[1].strip() if len(parts) > 1 else "AI 판단: 조건이 충족되었습니다."
-            return True, summary
-        else:
-            return False, ""
-            
-    except Exception as e:
-        logger.error(f"[{target_name}] Gemini API 호출 중 오류 발생: {e}")
-        # API 오류 시에는 안전하게 True를 반환하여 알림을 놓치지 않도록 함
-        return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
+    return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
