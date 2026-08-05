@@ -113,7 +113,7 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
             if attempt < 2:
                 time.sleep(5)
                 continue
-            # API 오류 시에는 안전하게 True를 반환하여 알림을 놓치지 않도록 함
-            return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
+            # API 오류(특히 429 한도 초과) 시 True를 반환하면 계속해서 오탐 알림이 폭주하므로 False를 반환하여 스킵합니다.
+            return False, ""
             
-    return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
+    return False, ""
