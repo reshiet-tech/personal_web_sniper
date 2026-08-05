@@ -75,6 +75,7 @@
         "ignore_selectors": [],
         "ignore_regex": [],
         "use_simple_fetch": false,
-        "is_active": true
+        "is_active": true,
+        "ai_prompt": "가격이 하락했을 떄 알려줘"
     }
 ]
