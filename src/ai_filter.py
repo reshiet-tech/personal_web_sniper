@@ -46,7 +46,12 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
     - 상품이나 숙박 시설의 가격이 기존(삭제된 내용)보다 현재(추가된 내용) 더 저렴하게 가격이 인하(할인)된 경우
     **주의**: 만약 애매하거나 재고 입고/가격 인하가 확실하지 않다면 무조건 'NO'라고 대답해!
 
-    다른 설명은 일절 하지 말고 오직 'YES' 또는 'NO' 로만 대답해.
+    [출력 형식]
+    - 유의미한 변경이 아니라면 오직 'NO' 라고만 대답해.
+    - 유의미한 변경이라면 'YES|' 뒤에 핵심 요약(무엇이 어떻게 변했는지 1~2문장)을 적어줘.
+      (예시: YES|기존 1억원에서 64만 8천원으로 가격이 크게 인하되었습니다.)
+
+    다른 설명은 일절 하지 말고 위 형식에 맞춰 대답해.
 
     [변경점 시작]
     {diff_text}
@@ -59,7 +64,7 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
         }],
         "generationConfig": {
             "temperature": 0.1,
-            "maxOutputTokens": 5,
+            "maxOutputTokens": 150,
         }
     }
 
@@ -68,16 +73,17 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
         response.raise_for_status()
         result = response.json()
         
-        answer = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip().upper()
-        
+        answer = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
         logger.info(f"[{target_name}] AI 판독 결과: {answer}")
         
-        if "YES" in answer:
-            return True
+        if answer.upper().startswith("YES"):
+            parts = answer.split("|", 1)
+            summary = parts[1].strip() if len(parts) > 1 else "AI 판단: 조건이 충족되었습니다."
+            return True, summary
         else:
-            return False
+            return False, ""
             
     except Exception as e:
         logger.error(f"[{target_name}] Gemini API 호출 중 오류 발생: {e}")
         # API 오류 시에는 안전하게 True를 반환하여 알림을 놓치지 않도록 함
-        return True
+        return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."

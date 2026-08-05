@@ -77,25 +77,31 @@ async def check_site_status(page, target, snapshots):
                 logger.info(f"[{name}] 변경사항 없음")
 
         if should_alert:
+            ai_summary = ""
             # AI 필터링 (키워드 모드가 아닌 단순 Diff 모드일 경우에만 적용)
             if not success_texts and not failure_texts:
                 logger.info(f"[{name}] AI에게 변경점 유의미성 질의 중...")
                 custom_ai_prompt = target.get('ai_prompt', "")
-                is_meaningful = evaluate_diff_with_ai(name, added, removed, custom_ai_prompt)
+                is_meaningful, summary_text = evaluate_diff_with_ai(name, added, removed, custom_ai_prompt)
                 if not is_meaningful:
                     should_alert = False
                     logger.info(f"[{name}] AI 판단: 무의미한 변경으로 알림 생략")
+                else:
+                    ai_summary = summary_text
 
         if should_alert:
             logger.info(f"[{name}] 상태 변경 감지! ({alert_reason})")
             
             diff_msg = ""
-            if added:
-                diff_msg += "\n<b>[추가된 내용]</b>\n" + "\n".join([f"+ {a}" for a in added[:30]])
-                if len(added) > 30: diff_msg += "\n... (생략)"
-            if removed:
-                diff_msg += "\n<b>[삭제된 내용]</b>\n" + "\n".join([f"- {r}" for r in removed[:30]])
-                if len(removed) > 30: diff_msg += "\n... (생략)"
+            if ai_summary:
+                diff_msg += f"\n💡 <b>AI 핵심 요약:</b>\n{ai_summary}\n"
+            else:
+                if added:
+                    diff_msg += "\n<b>[추가된 내용]</b>\n" + "\n".join([f"+ {a}" for a in added[:5]])
+                    if len(added) > 5: diff_msg += "\n... (생략)"
+                if removed:
+                    diff_msg += "\n<b>[삭제된 내용]</b>\n" + "\n".join([f"- {r}" for r in removed[:5]])
+                    if len(removed) > 5: diff_msg += "\n... (생략)"
                 
             message = f"🚨 <b>{name} 스나이퍼 알림</b> 🚨\n\n✅ <b>상태:</b> {alert_reason}\n🔗 <b>링크:</b> <a href='{url}'>바로가기</a>\n{diff_msg}"
             send_telegram_message(message)
