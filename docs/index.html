@@ -22,7 +22,13 @@
 
     <div id="dashboard-screen" class="screen hidden">
         <header class="dashboard-header">
-            <h1 class="neon-text">🎯 Web Sniper Dashboard</h1>
+            <div>
+                <h1 class="neon-text">🎯 Web Sniper Dashboard</h1>
+                <p id="app-metadata" style="opacity: 0.7; font-size: 0.9rem; margin-top: -10px;">
+                    버전: <span id="app-version">로딩 중...</span> | 
+                    동작 주기: <span id="app-interval">로딩 중...</span>
+                </p>
+            </div>
             <button id="btn-logout" class="outline-btn">로그아웃</button>
         </header>
 
@@ -137,6 +143,6 @@
         </div>
     </div>
 
-    <script src="app.js?v=2"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>

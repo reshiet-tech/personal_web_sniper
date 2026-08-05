@@ -48,6 +48,42 @@ function showDashboard() {
     loginScreen.classList.add("hidden");
     dashboardScreen.classList.remove("hidden");
     loadTargets();
+    loadMetadata();
+}
+
+async function fetchGithubFile(path) {
+    const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+        headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Accept": "application/vnd.github.v3+json" }
+    });
+    if (!response.ok) return null;
+    const data = await response.json();
+    return decodeURIComponent(escape(atob(data.content)));
+}
+
+function parseCronExpression(cron) {
+    if (cron === '0 * * * *') return '매 1시간마다';
+    if (cron === '*/30 * * * *') return '매 30분마다';
+    if (cron === '*/10 * * * *') return '매 10분마다';
+    if (cron === '*/5 * * * *') return '매 5분마다';
+    return cron;
+}
+
+async function loadMetadata() {
+    try {
+        const configText = await fetchGithubFile("src/config.py");
+        if (configText) {
+            const versionMatch = configText.match(/APP_VERSION\s*=\s*["']([^"']+)["']/);
+            if (versionMatch) document.getElementById("app-version").innerText = versionMatch[1];
+        }
+
+        const ymlText = await fetchGithubFile(".github/workflows/sniper.yml");
+        if (ymlText) {
+            const cronMatch = ymlText.match(/cron:\s*["']([^"']+)["']/);
+            if (cronMatch) document.getElementById("app-interval").innerText = parseCronExpression(cronMatch[1]);
+        }
+    } catch (e) {
+        console.error("Failed to load metadata:", e);
+    }
 }
 
 btnRefresh.addEventListener("click", loadTargets);
