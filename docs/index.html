@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Sniper Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="toast" class="toast"></div>
+
+    <div id="login-screen" class="screen">
+        <div class="glass-card login-card">
+            <h1 class="neon-text">🎯 Web Sniper</h1>
+            <p>GitHub Personal Access Token을 입력하세요.</p>
+            <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxx" autocomplete="off">
+            <button id="btn-login" class="neon-btn">로그인</button>
+            <p style="font-size: 0.8rem; opacity: 0.6; margin-top: 20px;">토큰은 브라우저에만 안전하게 저장됩니다.</p>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="screen hidden">
+        <header class="dashboard-header">
+            <h1 class="neon-text">🎯 Web Sniper Dashboard</h1>
+            <button id="btn-logout" class="outline-btn">로그아웃</button>
+        </header>
+
+        <div class="main-content">
+            <!-- Add Target Form -->
+            <section class="glass-card add-section">
+                <h2>새로운 타겟 추가 ✨</h2>
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label>타겟 이름 *</label>
+                        <input type="text" id="new-name" placeholder="예: 11번가 닌텐도 스위치">
+                    </div>
+                    <div class="input-group">
+                        <label>웹사이트 주소 (URL) *</label>
+                        <input type="url" id="new-url" placeholder="https://...">
+                    </div>
+                    <div class="input-group">
+                        <label>CSS 선택자</label>
+                        <input type="text" id="new-selector" value="body">
+                    </div>
+                    <div class="input-group">
+                        <label>성공 텍스트 (쉼표로 구분)</label>
+                        <input type="text" id="new-success" placeholder="예: 예약하기, 장바구니">
+                    </div>
+                    <div class="input-group">
+                        <label>실패 텍스트 (쉼표로 구분)</label>
+                        <input type="text" id="new-failure" placeholder="예: 품절, 예약마감">
+                    </div>
+                    
+                    <div class="input-group full-width">
+                        <details class="advanced-settings">
+                            <summary>⚙️ 고급 설정 (AI 프롬프트 및 필터링)</summary>
+                            <div class="advanced-content">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="new-simple-fetch"> 단순 스크래핑 모드 (WAF 우회 및 초고속 동작)
+                                </label>
+                                <label>사용자 정의 AI 프롬프트 (조건 작성)</label>
+                                <textarea id="new-ai-prompt" placeholder="예: 가격이 30만원 이하로 떨어졌을 때만 알려줘"></textarea>
+                                <label>무시할 CSS 선택자 (줄바꿈 구분)</label>
+                                <textarea id="new-ignore-sel" placeholder=".ad-banner&#10;#counter"></textarea>
+                                <label>무시할 정규표현식 (줄바꿈 구분)</label>
+                                <textarea id="new-ignore-reg" placeholder="[0-9]{2}:[0-9]{2}"></textarea>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+                <button id="btn-add-target" class="neon-btn full-btn">타겟 추가하기</button>
+            </section>
+
+            <!-- Targets List -->
+            <section class="targets-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>📋 현재 감시 중인 타겟</h2>
+                    <button id="btn-refresh" class="outline-btn">새로고침 🔄</button>
+                </div>
+                <div id="loading" class="loader hidden">로딩 중...</div>
+                <div id="targets-grid" class="targets-grid">
+                    <!-- Cards will be injected here -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="edit-modal" class="modal hidden">
+        <div class="glass-card modal-content">
+            <h2>타겟 수정 ✏️</h2>
+            <input type="hidden" id="edit-idx">
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>타겟 이름 *</label>
+                    <input type="text" id="edit-name">
+                </div>
+                <div class="input-group">
+                    <label>웹사이트 주소 (URL) *</label>
+                    <input type="url" id="edit-url">
+                </div>
+                <div class="input-group">
+                    <label>CSS 선택자</label>
+                    <input type="text" id="edit-selector">
+                </div>
+                <div class="input-group">
+                    <label>성공 텍스트</label>
+                    <input type="text" id="edit-success">
+                </div>
+                <div class="input-group">
+                    <label>실패 텍스트</label>
+                    <input type="text" id="edit-failure">
+                </div>
+                
+                <div class="input-group full-width">
+                    <details class="advanced-settings">
+                        <summary>⚙️ 고급 설정</summary>
+                        <div class="advanced-content">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="edit-simple-fetch"> 단순 스크래핑 모드
+                            </label>
+                            <label>사용자 정의 AI 프롬프트</label>
+                            <textarea id="edit-ai-prompt"></textarea>
+                            <label>무시할 CSS 선택자</label>
+                            <textarea id="edit-ignore-sel"></textarea>
+                            <label>무시할 정규표현식</label>
+                            <textarea id="edit-ignore-reg"></textarea>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="btn-cancel-edit" class="outline-btn">취소</button>
+                <button id="btn-save-edit" class="neon-btn">저장하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
