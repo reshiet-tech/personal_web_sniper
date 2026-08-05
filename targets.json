@@ -75,6 +75,6 @@
         "ignore_selectors": [],
         "ignore_regex": [],
         "use_simple_fetch": false,
-        "is_active": false
+        "is_active": true
     }
 ]
