@@ -69,11 +69,21 @@ def evaluate_diff_with_ai(target_name: str, added: list, removed: list, custom_p
     }
 
     try:
-        response = requests.post(url, json=payload, timeout=15)
+        response = requests.post(url, json=payload, timeout=30)
         response.raise_for_status()
         result = response.json()
         
-        answer = result.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "").strip()
+        candidates = result.get("candidates", [])
+        if not candidates:
+            logger.warning(f"[{target_name}] AI 응답에 candidates가 없습니다. 결과: {result}")
+            return True, "AI 분석 중 오류가 발생하여 내용을 요약할 수 없습니다."
+            
+        candidate = candidates[0]
+        if "content" not in candidate:
+            logger.warning(f"[{target_name}] AI 응답이 필터링되었거나 내용이 없습니다. 결과: {candidate}")
+            return True, "AI 분석이 차단되었거나 내용을 요약할 수 없습니다."
+            
+        answer = candidate.get("content", {}).get("parts", [{}])[0].get("text", "").strip()
         logger.info(f"[{target_name}] AI 판독 결과: {answer}")
         
         if answer.upper().startswith("YES"):
