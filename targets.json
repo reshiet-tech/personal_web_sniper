@@ -85,7 +85,7 @@
         "success_text": [],
         "failure_text": [],
         "use_simple_fetch": false,
-        "ai_prompt": "",
+        "ai_prompt": "기존 내용에 있던 가격보다 현재 가격이 더 저렴해진(할인된) 경우에만 알려줘 가격 변동이 없거나 오히려 비싸졌다면 무조건 무시해 타겟제품은 스위치2 [스플래툰 레이더스] 게임칩이야 너가 확인해야할 게임칩 가격은 75,000이하야(배송비 포함)",
         "ignore_selectors": [],
         "ignore_regex": [],
         "is_active": true
