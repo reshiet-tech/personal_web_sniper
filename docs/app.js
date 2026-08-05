@@ -1,5 +1,5 @@
 const REPO = "reshiet-tech/personal_web_sniper";
-const TARGETS_PATH = "data/targets.json";
+const TARGETS_PATH = "targets.json";
 let GITHUB_TOKEN = localStorage.getItem("gh_token") || "";
 let targetsData = [];
 let fileSha = "";
