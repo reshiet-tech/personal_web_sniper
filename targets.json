@@ -1,15 +1,5 @@
 [
     {
-        "name": "여기어때_브리드양양",
-        "url": "https://www.yeogi.com/domestic-accommodations/68602?checkIn=2026-08-15&checkOut=2026-08-16&personal=8",
-        "selector": "div#room > div.css-uqi8ka",
-        "success_text": [],
-        "failure_text": [],
-        "ignore_selectors": [],
-        "ignore_regex": [],
-        "use_simple_fetch": false
-    },
-    {
         "name": "11st_양양 쏠비치",
         "url": "https://tour.m.11st.co.kr/MW/Tour/getInternalProducts/detail.tmall?mallType=tour&dispCtgrNo=980727&catalogNo=19421183&checkIn=20260815&checkOut=20260816&room=5,3&finalDscPrice=0",
         "selector": "body",
