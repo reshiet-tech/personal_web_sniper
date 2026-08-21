@@ -1,38 +1,23 @@
 [
     {
         "name": "스위치2 젤다 왕눈",
+        "type": "price_monitor",
         "url": "https://m.danawa.com/product/product.html?code=88205561&keyword=%EC%A0%A4%EB%8B%A4%EC%9D%98+%EC%A0%84%EC%84%A4+%ED%8B%B0%EC%96%B4%EC%8A%A4+%EC%98%A4%EB%B8%8C+%EB%8D%94+%ED%82%B9%EB%8D%A4+%EC%8A%A4%EC%9C%84%EC%B9%982&cateCode=11338057",
-        "selector": "body",
-        "success_text": [],
-        "failure_text": [],
-        "ignore_selectors": [],
-        "ignore_regex": [],
-        "use_simple_fetch": false,
-        "is_active": true,
-        "ai_prompt": "기존 내용에 있던 가격보다 현재 가격이 더 저렴해진(할인된) 경우에만 알려줘\n가격 변동이 없거나 오히려 비싸졌다면 무조건 무시해\n타겟제품은 스위치2 젤다의 전설 티어즈 오브 킹덤(왕국의 눈물) 게임칩이야(배송지 포함)\n\n너가 확인해야할 젤다 게임칩 가격은 75,000이하야"
+        "target_price": 75000,
+        "is_active": true
     },
     {
         "name": "다나와_스플래툰 레이더스",
+        "type": "price_monitor",
         "url": "https://m.danawa.com/product/product.html?code=122688691&keyword=%EC%8A%A4%ED%94%8C%EB%9E%98%ED%88%B0&cateCode=11338057",
-        "selector": "body",
-        "success_text": [],
-        "failure_text": [],
-        "use_simple_fetch": false,
-        "ai_prompt": "기존 내용에 있던 가격보다 현재 가격이 더 저렴해진(할인된) 경우에만 알려줘 가격 변동이 없거나 오히려 비싸졌다면 무조건 무시해 타겟제품은 스위치2 [스플래툰 레이더스] 게임칩이야 너가 확인해야할 게임칩 가격은 75,000이하야(배송비 포함)",
-        "ignore_selectors": [],
-        "ignore_regex": [],
+        "target_price": 75000,
         "is_active": true
     },
     {
         "name": "다나와_마리오파티잼버리2",
+        "type": "price_monitor",
         "url": "https://m.danawa.com/product/product.html?code=92627342&keyword=%EB%8B%8C%ED%85%90%EB%8F%84+%EC%8A%A4%EC%9C%84%EC%B9%98+2+%EB%A7%88%EB%A6%AC%EC%98%A4+%ED%8C%8C%ED%8B%B0+%EC%9E%BC%EB%B2%84%EB%A6%AC+tv&cateCode=11338057",
-        "selector": "body",
-        "success_text": [],
-        "failure_text": [],
-        "use_simple_fetch": false,
-        "ai_prompt": "닌텐도 스위치2용 마리오파티 잼버리tv 가격 하락시에만 알려줘",
-        "ignore_selectors": [],
-        "ignore_regex": [],
+        "target_price": 60000,
         "is_active": true
     }
 ]

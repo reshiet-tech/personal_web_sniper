@@ -1,16 +1,12 @@
 import asyncio
-import random
-import os
-import time
-import subprocess
+import argparse
 from playwright.async_api import async_playwright
 from playwright_stealth import Stealth
 
-from src.config import load_targets, get_logger
+from src.config import get_logger, load_targets
 from src.notifier import send_telegram_message
-from src.comparator import load_snapshots, save_snapshots, get_text_diff
+from src.comparator import load_snapshots, save_snapshots
 from src.fetcher import fetch_and_normalize, fetch_simple
-from src.ai_filter import evaluate_diff_with_ai
 
 logger = get_logger(__name__)
 
@@ -24,167 +20,158 @@ USER_AGENTS = [
 async def check_site_status(page, target, snapshots):
     name = target["name"]
     url = target["url"]
-    success_texts = target.get("success_text", [])
-    failure_texts = target.get("failure_text", [])
+    target_type = target.get("type", "keyword_monitor")
 
     try:
         if target.get("use_simple_fetch", False):
-            logger.info(f"[{name}] 접속 중 (Simple Fetch): {url}")
-            content = await fetch_simple(target)
+            logger.info(f"[{name}] requests로 확인 중...")
+            result = await fetch_simple(target)
         else:
-            logger.info(f"[{name}] 접속 중: {url}")
-            content = await fetch_and_normalize(page, target)
-        old_content = snapshots.get(name, "")
+            logger.info(f"[{name}] 브라우저로 확인 중...")
+            result = await fetch_and_normalize(page, target)
+
+        current_text = result["text"]
+        current_price = result.get("price")
         
-        # 변경점 분석
-        added, removed = get_text_diff(old_content, content)
-        has_changed = bool(added or removed)
-        
-        # 키워드 감지
-        matched_success = next((text for text in success_texts if text in content), None)
-        is_success = bool(matched_success)
-        is_failure = any(text in content for text in failure_texts) if failure_texts else False
+        old_state = snapshots.get(name, {})
+        if isinstance(old_state, str):
+            # 마이그레이션: 기존 문자열 스냅샷을 딕셔너리로 변환
+            old_state = {"text": old_state, "price": None}
+            
+        old_text = old_state.get("text", "")
+        old_price = old_state.get("price")
 
         should_alert = False
         alert_reason = ""
-        
-        if success_texts:
-            if is_success and not is_failure:
-                should_alert = True
-                alert_reason = f"성공 키워드 감지 ('{matched_success}')"
-            elif is_failure:
-                logger.info(f"[{name}] 상태: 불가능 (품절/예약마감)")
-            else:
-                logger.info(f"[{name}] 감지 대기 중...")
-        elif failure_texts:
-            # 성공 키워드는 비어있고 실패 키워드만 있는 경우 -> "실패 키워드가 사라지면 성공"으로 간주 (리버스 트리거)
-            if not is_failure:
-                # 과거 상태에는 실패 키워드가 있었는지 확인 (계속 알림 방지)
-                was_failure = any(text in old_content for text in failure_texts) if old_content else True
-                if was_failure:
-                    should_alert = True
-                    alert_reason = "실패 키워드(품절/마감) 사라짐 감지"
-                else:
-                    logger.info(f"[{name}] 상태: 구매/예약 가능 상태 유지 중 (알림 생략)")
-            else:
-                logger.info(f"[{name}] 상태: 불가능 (품절/예약마감 유지)")
-        else:
-            # 단순 변경 감지 모드
-            if has_changed and old_content:
-                should_alert = True
-                alert_reason = "웹페이지 내용 변경 감지"
-            else:
-                logger.info(f"[{name}] 변경사항 없음")
+        msg_body = ""
 
-        if should_alert:
-            ai_summary = ""
-            # AI 필터링 (키워드 모드가 아닌 단순 Diff 모드일 경우에만 적용)
-            if not success_texts and not failure_texts:
-                logger.info(f"[{name}] AI에게 변경점 유의미성 질의 중...")
-                custom_ai_prompt = target.get('ai_prompt', "")
-                is_meaningful, summary_text = evaluate_diff_with_ai(name, added, removed, custom_ai_prompt)
-                if not is_meaningful:
-                    should_alert = False
-                    logger.info(f"[{name}] AI 판단: 무의미한 변경으로 알림 생략")
-                else:
-                    ai_summary = summary_text
-
-        if should_alert:
-            logger.info(f"[{name}] 상태 변경 감지! ({alert_reason})")
+        if target_type == "price_monitor":
+            target_price = target.get("target_price")
             
-            diff_msg = ""
-            if ai_summary:
-                if "오류가 발생하여" not in ai_summary:
-                    diff_msg += f"\n💡 <b>AI 핵심 요약:</b>\n{ai_summary}\n"
-                # 오류가 발생한 경우 요약 텍스트를 생략하여 텔레그램 미리보기가 돋보이게 함
+            if current_price is None:
+                logger.info(f"[{name}] 가격을 추출할 수 없습니다.")
             else:
-                if added:
-                    diff_msg += "\n<b>[추가된 내용]</b>\n" + "\n".join([f"+ {a}" for a in added[:5]])
-                    if len(added) > 5: diff_msg += "\n... (생략)"
-                if removed:
-                    diff_msg += "\n<b>[삭제된 내용]</b>\n" + "\n".join([f"- {r}" for r in removed[:5]])
-                    if len(removed) > 5: diff_msg += "\n... (생략)"
+                if old_price is None or current_price != old_price:
+                    # 가격 변동 발생
+                    if target_price and current_price <= target_price:
+                        should_alert = True
+                        alert_reason = "목표가 도달! (가격 하락 감지)"
+                    elif old_price and current_price < old_price:
+                        # 목표가가 없더라도 과거보다 떨어지면 알림 (선택적)
+                        should_alert = True
+                        alert_reason = "가격 하락 감지!"
+                    else:
+                        logger.info(f"[{name}] 가격 변동이 없거나 올랐습니다. (기존: {old_price}, 현재: {current_price})")
                 
-            message = f"🚨 <b>{name} 스나이퍼 알림</b> 🚨\n\n✅ <b>상태:</b> {alert_reason}\n🔗 <b>링크:</b> <a href='{url}'>바로가기</a>\n{diff_msg}"
-            send_telegram_message(message)
+                if should_alert:
+                    msg_body = f"💰 기존 가격: {old_price if old_price else '모름'}원\n📉 현재 가격: {current_price}원"
+                    if target_price:
+                        msg_body += f" (목표가 {target_price}원 달성!)"
+        
+        elif target_type == "keyword_monitor":
+            success_texts = target.get("success_text", [])
+            failure_texts = target.get("failure_text", [])
             
-        if has_changed or not old_content:
-            snapshots[name] = content
+            matched_success = next((text for text in success_texts if text in current_text), None)
+            is_success = bool(matched_success)
+            is_failure = any(text in current_text for text in failure_texts) if failure_texts else False
+            
+            if success_texts:
+                if is_success and not is_failure:
+                    # 새로 성공 키워드가 감지되었을 때만 알림
+                    old_matched = any(text in old_text for text in success_texts)
+                    if not old_matched:
+                        should_alert = True
+                        alert_reason = f"성공 키워드 감지 ('{matched_success}')"
+                        msg_body = f"💡 감지된 키워드: {matched_success}"
+                elif is_failure:
+                    logger.info(f"[{name}] 상태: 불가능 (품절/예약마감)")
+                else:
+                    logger.info(f"[{name}] 감지 대기 중...")
+            
+            elif failure_texts:
+                if not is_failure:
+                    was_failure = any(text in old_text for text in failure_texts) if old_text else True
+                    if was_failure:
+                        should_alert = True
+                        alert_reason = "실패 키워드(품절/마감) 사라짐 감지"
+                        msg_body = f"💡 상태: 구매/예약 가능으로 변경됨"
+                else:
+                    logger.info(f"[{name}] 상태: 불가능 (품절/예약마감 유지)")
+                    
+            else:
+                # 단순 변경 (가격도 아니고 키워드도 없을 때)
+                if old_text and current_text != old_text:
+                    should_alert = True
+                    alert_reason = "웹페이지 내용 변경 감지"
+                    msg_body = "💡 웹페이지의 텍스트가 변경되었습니다."
+
+        if should_alert:
+            logger.info(f"[{name}] 🚨 상태 변경 감지! ({alert_reason})")
+            
+            message = (
+                f"🚨 <b>{name} 스나이퍼 알림</b> 🚨\n\n"
+                f"✅ <b>상태:</b> {alert_reason}\n"
+                f"🔗 <b>링크:</b> <a href='{url}'>바로가기</a>\n\n"
+                f"{msg_body}"
+            )
+            
+            send_telegram_message(message)
+
+        # 상태 저장
+        snapshots[name] = {
+            "text": current_text,
+            "price": current_price
+        }
 
     except Exception as e:
         logger.error(f"[{name}] 확인 중 에러 발생: {e}")
 
-async def main():
-    logger.info("=== 24/7 연속 감시 봇 (무한 동력 모드) 실행 시작 ===")
+async def main_loop():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--test", action="store_true", help="테스트 모드: 알림 전송 안 함")
+    args = parser.parse_args()
+
+    targets = load_targets()
+    active_targets = [t for t in targets if t.get("is_active", True)]
     
-    start_time = time.time()
-    max_runtime = 5 * 3600 + 45 * 60  # 5시간 45분 (GitHub Actions 타임아웃 6시간 방지용)
+    if not active_targets:
+        logger.info("활성화된 감시 대상이 없습니다.")
+        return
 
-    while True:
-        targets = load_targets()
-        if not targets:
-            logger.info("등록된 타겟이 없습니다.")
-            await asyncio.sleep(60)
-            continue
+    snapshots = load_snapshots()
 
-        async with async_playwright() as p:
-            browser = await p.chromium.launch(headless=True)
-            user_agent = random.choice(USER_AGENTS)
-            context = await browser.new_context(
-                user_agent=user_agent,
-                viewport={"width": 1920, "height": 1080},
-                locale="ko-KR",
-                timezone_id="Asia/Seoul"
-            )
-            page = await context.new_page()
-            
-            stealth = Stealth()
-            await stealth.apply_stealth_async(page)
+    async with async_playwright() as p:
+        import random
+        user_agent = random.choice(USER_AGENTS)
+        
+        browser = await p.chromium.launch(headless=True)
+        context = await browser.new_context(
+            user_agent=user_agent,
+            viewport={'width': 1920, 'height': 1080},
+            java_script_enabled=True,
+            bypass_csp=True
+        )
+        
+        page = await context.new_page()
+        stealth = Stealth()
+        await stealth.apply_stealth_async(page)
+        
+        await page.set_extra_http_headers({
+            "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "none",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1"
+        })
 
-            snapshots = load_snapshots()
+        for target in active_targets:
+            await check_site_status(page, target, snapshots)
+            await asyncio.sleep(2)
 
-            for target in targets:
-                if not target.get('is_active', True):
-                    logger.info(f"[{target['name']}] 비활성화 상태이므로 감시를 건너뜁니다.")
-                    continue
-                await asyncio.sleep(random.uniform(1.0, 3.0))
-                await check_site_status(page, target, snapshots)
-                await asyncio.sleep(random.uniform(3.0, 7.0))
-
-            save_snapshots(snapshots)
-            await browser.close()
-            
-        # 깃허브 액션 환경일 경우에만 매 루프마다 자동 Commit & Push
-        if os.environ.get("GITHUB_ACTIONS") == "true":
-            logger.info("최신 상태를 Git에 저장(Push) 중...")
-            subprocess.run(["git", "add", "data/snapshots.json"])
-            res = subprocess.run(["git", "commit", "-m", "Update snapshots (auto) [skip ci]"], capture_output=True)
-            if res.returncode == 0:
-                subprocess.run(["git", "pull", "--rebase", "-X", "theirs", "--autostash"], capture_output=True)
-                subprocess.run(["git", "push"], capture_output=True)
-                logger.info("Git 저장 완료.")
-            else:
-                logger.info("상태 변경 없음 (Commit 생략).")
-
-        if time.time() - start_time > max_runtime:
-            logger.info("=== 최대 실행 시간 도달. 다음 주기로 넘기기 위해 종료합니다 ===")
-            break
-            
-        # 설정된 주기 가져오기 (기본값 3분)
-        interval_sec = 180
-        settings_file = "data/settings.json"
-        if os.path.exists(settings_file):
-            try:
-                with open(settings_file, "r", encoding="utf-8") as f:
-                    settings = json.load(f)
-                    interval_sec = settings.get("loop_interval_sec", 180)
-            except Exception as e:
-                logger.error(f"설정 파일 읽기 오류: {e}")
-                
-        # 약간의 랜덤성을 부여하여 차단 방지 (설정된 주기의 90% ~ 110%)
-        wait_seconds = random.uniform(interval_sec * 0.9, interval_sec * 1.1)
-        logger.info(f"다음 주기를 위해 {int(wait_seconds)}초 대기합니다... (목표 주기: {interval_sec}초)")
-        await asyncio.sleep(wait_seconds)
+        save_snapshots(snapshots)
+        await browser.close()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(main_loop())
