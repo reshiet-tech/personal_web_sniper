@@ -53,20 +53,28 @@ async def check_site_status(page, target, snapshots):
             else:
                 if old_price is None or current_price != old_price:
                     # 가격 변동 발생
-                    if target_price and current_price <= target_price:
-                        should_alert = True
-                        alert_reason = "목표가 도달! (가격 하락 감지)"
-                    elif old_price and current_price < old_price:
-                        # 목표가가 없더라도 과거보다 떨어지면 알림 (선택적)
-                        should_alert = True
-                        alert_reason = "가격 하락 감지!"
-                    else:
-                        logger.info(f"[{name}] 가격 변동이 없거나 올랐습니다. (기존: {old_price}, 현재: {current_price})")
-                
-                if should_alert:
-                    msg_body = f"💰 기존 가격: {old_price if old_price else '모름'}원\n📉 현재 가격: {current_price}원"
                     if target_price:
-                        msg_body += f" (목표가 {target_price}원 달성!)"
+                        if current_price <= target_price:
+                            should_alert = True
+                            alert_reason = "목표가 도달! 🎉 (가격 하락 감지)"
+                            msg_body = f"💰 기존 가격: {old_price if old_price else '모름'}원\n📉 현재 가격: {current_price}원 (목표가 {target_price}원 달성!)"
+                        elif current_price <= target_price * 1.05: # 목표가의 5% 이내 접근
+                            should_alert = True
+                            alert_reason = "목표가 근접! 👀 (5% 이내 진입)"
+                            msg_body = f"💰 기존 가격: {old_price if old_price else '모름'}원\n📉 현재 가격: {current_price}원 (목표가 {target_price}원에 거의 다 왔습니다!)"
+                        elif old_price and current_price < old_price:
+                            should_alert = True
+                            alert_reason = "가격 하락 감지! 📉"
+                            msg_body = f"💰 기존 가격: {old_price}원\n📉 현재 가격: {current_price}원"
+                        else:
+                            logger.info(f"[{name}] 가격 변동이 없거나 올랐습니다. (기존: {old_price}, 현재: {current_price})")
+                    else:
+                        if old_price and current_price < old_price:
+                            should_alert = True
+                            alert_reason = "가격 하락 감지! 📉"
+                            msg_body = f"💰 기존 가격: {old_price}원\n📉 현재 가격: {current_price}원"
+                        else:
+                            logger.info(f"[{name}] 가격 변동이 없거나 올랐습니다. (기존: {old_price}, 현재: {current_price})")
         
         elif target_type == "keyword_monitor":
             success_texts = target.get("success_text", [])
