@@ -93,7 +93,7 @@ async function loadMetadata() {
             currentIntervalSec = 180;
         }
         
-        document.getElementById("app-interval").innerText = `${currentIntervalSec}초 (${Math.floor(currentIntervalSec/60)}분)`;
+        document.getElementById("app-interval").innerText = `${Math.floor(currentIntervalSec/60)}분`;
 
     } catch (e) {
         console.error("Failed to load metadata:", e);
@@ -103,7 +103,7 @@ async function loadMetadata() {
 // Settings Modal
 const settingsModal = document.getElementById("settings-modal");
 document.getElementById("btn-settings").addEventListener("click", () => {
-    document.getElementById("setting-interval").value = currentIntervalSec;
+    document.getElementById("setting-interval").value = Math.floor(currentIntervalSec / 60);
     settingsModal.classList.remove("hidden");
 });
 
@@ -112,13 +112,13 @@ document.getElementById("btn-cancel-settings").addEventListener("click", () => {
 });
 
 document.getElementById("btn-save-settings").addEventListener("click", async () => {
-    let newInterval = parseInt(document.getElementById("setting-interval").value);
-    if (isNaN(newInterval) || newInterval < 180) {
-        alert("최소 180초(3분) 이상으로 설정해야 합니다.");
+    let newIntervalMin = parseInt(document.getElementById("setting-interval").value);
+    if (isNaN(newIntervalMin) || newIntervalMin < 3) {
+        alert("최소 3분 이상으로 설정해야 합니다.");
         return;
     }
     
-    currentIntervalSec = newInterval;
+    currentIntervalSec = newIntervalMin * 60;
     const settingsObj = { loop_interval_sec: currentIntervalSec };
     const contentStr = JSON.stringify(settingsObj, null, 4);
     const encodedContent = btoa(unescape(encodeURIComponent(contentStr)));
@@ -142,7 +142,7 @@ document.getElementById("btn-save-settings").addEventListener("click", async () 
         
         const data = await response.json();
         settingsSha = data.content.sha;
-        document.getElementById("app-interval").innerText = `${currentIntervalSec}초 (${Math.floor(currentIntervalSec/60)}분)`;
+        document.getElementById("app-interval").innerText = `${Math.floor(currentIntervalSec/60)}분`;
         settingsModal.classList.add("hidden");
         showToast("✅ 설정이 저장되었습니다!");
     } catch (error) {
