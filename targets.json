@@ -31,7 +31,14 @@
         "name": "다나와_마리오파티잼버리2",
         "type": "price_monitor",
         "url": "https://m.danawa.com/product/product.html?code=92627342&keyword=%EB%8B%8C%ED%85%90%EB%8F%84+%EC%8A%A4%EC%9C%84%EC%B9%98+2+%EB%A7%88%EB%A6%AC%EC%98%A4+%ED%8C%8C%ED%8B%B0+%EC%9E%BC%EB%B2%84%EB%A6%AC+tv&cateCode=11338057",
-        "target_price": 60000,
-        "is_active": true
+        "target_price": 65000,
+        "is_active": true,
+        "selector": "body",
+        "success_text": [],
+        "failure_text": [],
+        "use_simple_fetch": false,
+        "ai_prompt": "",
+        "ignore_selectors": [],
+        "ignore_regex": []
     }
 ]
