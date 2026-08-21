@@ -49,16 +49,23 @@
                         <input type="url" id="new-url" placeholder="https://...">
                     </div>
                     <div class="input-group">
-                        <label>CSS 선택자</label>
-                        <input type="text" id="new-selector" value="body">
+                        <label>타겟 유형</label>
+                        <select id="new-type" style="padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px;">
+                            <option value="price_monitor">가격 감시 (목표가)</option>
+                            <option value="keyword_monitor">키워드 감시 (성공/실패 텍스트)</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label>목표가 (숫자, 가격 감시용)</label>
+                        <input type="number" id="new-target-price" placeholder="예: 75000">
                     </div>
                     <div class="input-group">
                         <label>성공 텍스트 (쉼표로 구분)</label>
-                        <input type="text" id="new-success" placeholder="예: 예약하기, 장바구니">
+                        <input type="text" id="new-success" placeholder="예: 예약하기, 구매하기">
                     </div>
                     <div class="input-group">
                         <label>실패 텍스트 (쉼표로 구분)</label>
-                        <input type="text" id="new-failure" placeholder="예: 품절, 예약마감">
+                        <input type="text" id="new-failure" placeholder="예: 품절, 판매종료">
                     </div>
                     
                     <div class="input-group full-width">
@@ -128,8 +135,15 @@
                     <input type="url" id="edit-url">
                 </div>
                 <div class="input-group">
-                    <label>CSS 선택자</label>
-                    <input type="text" id="edit-selector">
+                    <label>타겟 유형</label>
+                    <select id="edit-type" style="padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 8px;">
+                        <option value="price_monitor">가격 감시 (목표가)</option>
+                        <option value="keyword_monitor">키워드 감시 (성공/실패 텍스트)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>목표가 (숫자, 가격 감시용)</label>
+                    <input type="number" id="edit-target-price">
                 </div>
                 <div class="input-group">
                     <label>성공 텍스트</label>

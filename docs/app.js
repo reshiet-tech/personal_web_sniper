@@ -197,9 +197,15 @@ function renderTargets() {
         const card = document.createElement("div");
         card.className = "glass-card target-card";
         
-        const successText = (target.success_text && target.success_text.length) ? target.success_text.join(', ') : '없음 (AI 판독)';
-        const failureText = (target.failure_text && target.failure_text.length) ? target.failure_text.join(', ') : '없음';
-        const aiPrompt = target.ai_prompt ? `🤖 AI 프롬프트: ${target.ai_prompt}` : '';
+        let targetInfoHtml = '';
+        if (target.type === 'price_monitor') {
+            targetInfoHtml = `<p>💰 <b>목표가:</b> ${target.target_price ? target.target_price.toLocaleString() + '원' : '제한 없음'}</p>`;
+        } else {
+            const successText = (target.success_text && target.success_text.length) ? target.success_text.join(', ') : '없음';
+            const failureText = (target.failure_text && target.failure_text.length) ? target.failure_text.join(', ') : '없음';
+            targetInfoHtml = `<p>✅ 성공: ${successText}</p><p>❌ 실패: ${failureText}</p>`;
+        }
+        
         const isActive = target.is_active !== false;
 
         card.innerHTML = `
@@ -219,9 +225,7 @@ function renderTargets() {
             <button class="outline-btn" onclick="window.open('${target.url}', '_blank')">🔗 웹사이트 바로가기</button>
 
             <div class="target-info">
-                <p>✅ 성공: ${successText}</p>
-                <p>❌ 실패: ${failureText}</p>
-                ${aiPrompt ? `<p>${aiPrompt}</p>` : ''}
+                ${targetInfoHtml}
             </div>
 
             <div class="target-actions">
@@ -287,9 +291,14 @@ document.getElementById("btn-add-target").addEventListener("click", () => {
     const parseList = (str) => str.split(",").map(s => s.trim()).filter(s => s);
     const parseLines = (str) => str.split("\n").map(s => s.trim()).filter(s => s);
 
+    const type = document.getElementById("new-type").value || "keyword_monitor";
+    const target_price = document.getElementById("new-target-price").value;
+
     targetsData.push({
         name,
         url,
+        type,
+        target_price: target_price ? parseInt(target_price, 10) : null,
         selector: document.getElementById("new-selector").value.trim() || "body",
         success_text: parseList(document.getElementById("new-success").value),
         failure_text: parseList(document.getElementById("new-failure").value),
@@ -318,6 +327,8 @@ window.openEditModal = function(index) {
     document.getElementById("edit-idx").value = index;
     document.getElementById("edit-name").value = target.name;
     document.getElementById("edit-url").value = target.url;
+    document.getElementById("edit-type").value = target.type || 'keyword_monitor';
+    document.getElementById("edit-target-price").value = target.target_price || '';
     document.getElementById("edit-selector").value = target.selector || 'body';
     document.getElementById("edit-success").value = (target.success_text||[]).join(', ');
     document.getElementById("edit-failure").value = (target.failure_text||[]).join(', ');
@@ -343,10 +354,15 @@ document.getElementById("btn-save-edit").addEventListener("click", () => {
     const parseList = (str) => str.split(",").map(s => s.trim()).filter(s => s);
     const parseLines = (str) => str.split("\n").map(s => s.trim()).filter(s => s);
 
+    const type = document.getElementById("edit-type").value || "keyword_monitor";
+    const target_price = document.getElementById("edit-target-price").value;
+
     targetsData[index] = {
         ...targetsData[index],
         name,
         url,
+        type,
+        target_price: target_price ? parseInt(target_price, 10) : null,
         selector: document.getElementById("edit-selector").value.trim() || "body",
         success_text: parseList(document.getElementById("edit-success").value),
         failure_text: parseList(document.getElementById("edit-failure").value),
