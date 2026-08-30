@@ -293,7 +293,7 @@ document.getElementById("btn-add-target").addEventListener("click", () => {
 
     const type = document.getElementById("new-type").value || "keyword_monitor";
     const target_price = document.getElementById("new-target-price").value;
-    const alert_on_any_drop = document.getElementById("new-alert-any-drop").checked;
+    const alert_on_any_drop = document.getElementById("new-alert-any-drop").value === "true";
 
     targetsData.push({
         name,
@@ -318,7 +318,7 @@ document.getElementById("btn-add-target").addEventListener("click", () => {
         });
         document.getElementById("new-selector").value = 'body';
         document.getElementById("new-simple-fetch").checked = false;
-        document.getElementById("new-alert-any-drop").checked = true;
+        document.getElementById("new-alert-any-drop").value = "true";
     });
 });
 
@@ -334,7 +334,7 @@ window.openEditModal = function(index) {
     document.getElementById("edit-target-price").value = target.target_price || '';
     
     // 기본값 처리를 위해 undefined인 경우 true로 간주
-    document.getElementById("edit-alert-any-drop").checked = target.alert_on_any_drop !== false;
+    document.getElementById("edit-alert-any-drop").value = target.alert_on_any_drop !== false ? "true" : "false";
     
     document.getElementById("edit-selector").value = target.selector || 'body';
     document.getElementById("edit-success").value = (target.success_text||[]).join(', ');
@@ -363,7 +363,7 @@ document.getElementById("btn-save-edit").addEventListener("click", () => {
 
     const type = document.getElementById("edit-type").value || "keyword_monitor";
     const target_price = document.getElementById("edit-target-price").value;
-    const alert_on_any_drop = document.getElementById("edit-alert-any-drop").checked;
+    const alert_on_any_drop = document.getElementById("edit-alert-any-drop").value === "true";
 
     targetsData[index] = {
         ...targetsData[index],

@@ -63,9 +63,12 @@
                         <label>CSS 선택자 (기본값: body)</label>
                         <input type="text" id="new-selector" value="body">
                     </div>
-                    <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
-                        <input type="checkbox" id="new-alert-any-drop" checked style="width: 20px; height: 20px;">
-                        <label for="new-alert-any-drop" style="margin-bottom: 0;">모든 가격 하락 시 알림 받기 (체크 해제 시 목표가 근접/도달시에만 알림)</label>
+                    <div class="input-group">
+                        <label>가격 하락 알림 조건 (가격 모니터링 시)</label>
+                        <select id="new-alert-any-drop">
+                            <option value="true" selected>가격이 하락할 때마다 항상 알림</option>
+                            <option value="false">설정한 목표가(5% 이내) 도달 시에만 알림</option>
+                        </select>
                     </div>
                     <div class="input-group">
                         <label>성공 텍스트 (쉼표로 구분)</label>
@@ -157,9 +160,12 @@
                     <label>CSS 선택자 (기본값: body)</label>
                     <input type="text" id="edit-selector">
                 </div>
-                <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="edit-alert-any-drop" checked style="width: 20px; height: 20px;">
-                    <label for="edit-alert-any-drop" style="margin-bottom: 0;">모든 가격 하락 시 알림 받기 (체크 해제 시 목표가 근접/도달시에만 알림)</label>
+                <div class="input-group">
+                    <label>가격 하락 알림 조건 (가격 모니터링 시)</label>
+                    <select id="edit-alert-any-drop">
+                        <option value="true">가격이 하락할 때마다 항상 알림</option>
+                        <option value="false">설정한 목표가(5% 이내) 도달 시에만 알림</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label>성공 텍스트</label>
