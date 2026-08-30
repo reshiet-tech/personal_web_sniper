@@ -293,12 +293,14 @@ document.getElementById("btn-add-target").addEventListener("click", () => {
 
     const type = document.getElementById("new-type").value || "keyword_monitor";
     const target_price = document.getElementById("new-target-price").value;
+    const alert_on_any_drop = document.getElementById("new-alert-any-drop").checked;
 
     targetsData.push({
         name,
         url,
         type,
         target_price: target_price ? parseInt(target_price, 10) : null,
+        alert_on_any_drop,
         selector: document.getElementById("new-selector").value.trim() || "body",
         success_text: parseList(document.getElementById("new-success").value),
         failure_text: parseList(document.getElementById("new-failure").value),
@@ -316,6 +318,7 @@ document.getElementById("btn-add-target").addEventListener("click", () => {
         });
         document.getElementById("new-selector").value = 'body';
         document.getElementById("new-simple-fetch").checked = false;
+        document.getElementById("new-alert-any-drop").checked = true;
     });
 });
 
@@ -329,6 +332,10 @@ window.openEditModal = function(index) {
     document.getElementById("edit-url").value = target.url;
     document.getElementById("edit-type").value = target.type || 'keyword_monitor';
     document.getElementById("edit-target-price").value = target.target_price || '';
+    
+    // 기본값 처리를 위해 undefined인 경우 true로 간주
+    document.getElementById("edit-alert-any-drop").checked = target.alert_on_any_drop !== false;
+    
     document.getElementById("edit-selector").value = target.selector || 'body';
     document.getElementById("edit-success").value = (target.success_text||[]).join(', ');
     document.getElementById("edit-failure").value = (target.failure_text||[]).join(', ');
@@ -356,6 +363,7 @@ document.getElementById("btn-save-edit").addEventListener("click", () => {
 
     const type = document.getElementById("edit-type").value || "keyword_monitor";
     const target_price = document.getElementById("edit-target-price").value;
+    const alert_on_any_drop = document.getElementById("edit-alert-any-drop").checked;
 
     targetsData[index] = {
         ...targetsData[index],
@@ -363,6 +371,7 @@ document.getElementById("btn-save-edit").addEventListener("click", () => {
         url,
         type,
         target_price: target_price ? parseInt(target_price, 10) : null,
+        alert_on_any_drop,
         selector: document.getElementById("edit-selector").value.trim() || "body",
         success_text: parseList(document.getElementById("edit-success").value),
         failure_text: parseList(document.getElementById("edit-failure").value),

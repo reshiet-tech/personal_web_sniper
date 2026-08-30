@@ -62,12 +62,12 @@ async def check_site_status(page, target, snapshots):
                             should_alert = True
                             alert_reason = "목표가 근접! 👀 (5% 이내 진입)"
                             msg_body = f"💰 기존 가격: {old_price if old_price else '모름'}원\n📉 현재 가격: {current_price}원 (목표가 {target_price}원에 거의 다 왔습니다!)"
-                        elif old_price and current_price < old_price:
+                        elif target.get("alert_on_any_drop", True) and old_price and current_price < old_price:
                             should_alert = True
                             alert_reason = "가격 하락 감지! 📉"
                             msg_body = f"💰 기존 가격: {old_price}원\n📉 현재 가격: {current_price}원"
                         else:
-                            logger.info(f"[{name}] 가격 변동이 없거나 올랐습니다. (기존: {old_price}, 현재: {current_price})")
+                            logger.info(f"[{name}] 가격 조건 미달 또는 올랐습니다. (기존: {old_price}, 현재: {current_price})")
                     else:
                         if old_price and current_price < old_price:
                             should_alert = True

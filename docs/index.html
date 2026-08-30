@@ -63,6 +63,10 @@
                         <label>CSS 선택자 (기본값: body)</label>
                         <input type="text" id="new-selector" value="body">
                     </div>
+                    <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="new-alert-any-drop" checked style="width: 20px; height: 20px;">
+                        <label for="new-alert-any-drop" style="margin-bottom: 0;">모든 가격 하락 시 알림 받기 (체크 해제 시 목표가 근접/도달시에만 알림)</label>
+                    </div>
                     <div class="input-group">
                         <label>성공 텍스트 (쉼표로 구분)</label>
                         <input type="text" id="new-success" placeholder="예: 예약하기, 구매하기">
@@ -150,8 +154,12 @@
                     <input type="number" id="edit-target-price">
                 </div>
                 <div class="input-group">
-                    <label>CSS 선택자</label>
+                    <label>CSS 선택자 (기본값: body)</label>
                     <input type="text" id="edit-selector">
+                </div>
+                <div class="input-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="edit-alert-any-drop" checked style="width: 20px; height: 20px;">
+                    <label for="edit-alert-any-drop" style="margin-bottom: 0;">모든 가격 하락 시 알림 받기 (체크 해제 시 목표가 근접/도달시에만 알림)</label>
                 </div>
                 <div class="input-group">
                     <label>성공 텍스트</label>
