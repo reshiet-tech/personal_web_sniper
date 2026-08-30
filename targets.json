@@ -39,6 +39,7 @@
         "use_simple_fetch": false,
         "ai_prompt": "",
         "ignore_selectors": [],
-        "ignore_regex": []
+        "ignore_regex": [],
+        "alert_on_any_drop": false
     }
 ]
