@@ -47,12 +47,13 @@ async def check_site_status(page, target, snapshots):
 
         if target_type == "price_monitor":
             target_price = target.get("target_price")
+            old_target_price = old_state.get("target_price")
             
             if current_price is None:
                 logger.info(f"[{name}] 가격을 추출할 수 없습니다.")
             else:
-                if old_price is None or current_price != old_price:
-                    # 가격 변동 발생
+                if old_price is None or current_price != old_price or old_target_price != target_price:
+                    # 가격 변동 발생 또는 목표가 설정 변경됨
                     if target_price:
                         if current_price <= target_price:
                             should_alert = True
@@ -75,6 +76,8 @@ async def check_site_status(page, target, snapshots):
                             msg_body = f"💰 기존 가격: {old_price}원\n📉 현재 가격: {current_price}원"
                         else:
                             logger.info(f"[{name}] 가격 변동이 없거나 올랐습니다. (기존: {old_price}, 현재: {current_price})")
+                else:
+                    logger.info(f"[{name}] 가격 변동 없음 (현재: {current_price})")
         
         elif target_type == "keyword_monitor":
             success_texts = target.get("success_text", [])
@@ -129,7 +132,8 @@ async def check_site_status(page, target, snapshots):
         # 상태 저장
         snapshots[name] = {
             "text": current_text,
-            "price": current_price
+            "price": current_price,
+            "target_price": target.get("target_price") if target_type == "price_monitor" else None
         }
 
     except Exception as e:
