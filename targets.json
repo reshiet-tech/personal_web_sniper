@@ -43,5 +43,20 @@
         "ignore_selectors": [],
         "ignore_regex": [],
         "alert_on_any_drop": false
+    },
+    {
+        "name": "Ssg 스위치2 동숲",
+        "url": "https://m.ssg.com/item/itemView.ssg?itemId=1000818149244&siteNo=6001&salestrNo=6005&ckwhere=ssg_danawa&appPopYn=n&utm_medium=PCS&utm_source=danawa&utm_campaign=danawa_pcs&service_id=elecdn",
+        "type": "keyword_monitor",
+        "target_price": null,
+        "alert_on_any_drop": true,
+        "selector": "body",
+        "success_text": [],
+        "failure_text": [],
+        "use_simple_fetch": false,
+        "ai_prompt": "",
+        "ignore_selectors": [],
+        "ignore_regex": [],
+        "is_active": true
     }
 ]
