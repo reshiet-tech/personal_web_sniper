@@ -57,6 +57,6 @@
         "ai_prompt": "",
         "ignore_selectors": [],
         "ignore_regex": [],
-        "is_active": true
+        "is_active": false
     }
 ]
