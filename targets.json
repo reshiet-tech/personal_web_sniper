@@ -19,7 +19,7 @@
         "type": "price_monitor",
         "url": "https://m.danawa.com/product/product.html?code=122688691&keyword=%EC%8A%A4%ED%94%8C%EB%9E%98%ED%88%B0&cateCode=11338057",
         "target_price": 64000,
-        "is_active": true,
+        "is_active": false,
         "selector": "body",
         "success_text": [],
         "failure_text": [],
