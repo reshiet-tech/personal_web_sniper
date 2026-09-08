@@ -15,10 +15,10 @@
         "alert_on_any_drop": false
     },
     {
-        "name": "다나와_스플래툰 레이더스",
+        "name": "다나와_엘든링",
         "type": "price_monitor",
-        "url": "https://m.danawa.com/product/product.html?code=122688691&keyword=%EC%8A%A4%ED%94%8C%EB%9E%98%ED%88%B0&cateCode=11338057",
-        "target_price": 64000,
+        "url": "https://m.danawa.com/product/product.html?code=123742518&keyword=%EC%97%98%EB%93%A0%EB%A7%81+%EC%8A%A4%EC%9C%84%EC%B9%982",
+        "target_price": 80000,
         "is_active": false,
         "selector": "body",
         "success_text": [],
@@ -27,7 +27,7 @@
         "ai_prompt": "",
         "ignore_selectors": [],
         "ignore_regex": [],
-        "alert_on_any_drop": false
+        "alert_on_any_drop": true
     },
     {
         "name": "다나와_마리오파티잼버리2",
